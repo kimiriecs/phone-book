@@ -1,0 +1,91 @@
+version: '3.8'
+
+services:
+    app:
+        container_name: app
+        build:
+            context: './'
+            dockerfile: './docker/app/Dockerfile'
+            args:
+                - PUID=${PUID}
+                - PGID=${PGID}
+        restart: always
+        volumes:
+            - './:/var/www/html'
+        depends_on:
+            - db
+        networks:
+            - phone-book
+
+    server:
+        container_name: server
+        build:
+            context: './docker/server/'
+        ports:
+            - '${SERVER_PORT:-80}:80'
+        restart: always
+        volumes:
+            - './:/var/www/html:rw'
+        depends_on:
+            - app
+        networks:
+            - phone-book
+
+    db:
+        container_name: db
+        build:
+            context: './'
+            dockerfile: './docker/db/Dockerfile'
+        ports:
+            - '${DB_PORT:-3306}:3306'
+        environment:
+            MARIADB_ROOT_PASSWORD: '${DB_ROOT_PASSWORD:-root}'
+            MARIADB_DATABASE: '${DB_DATABASE}'
+            MARIADB_USER: '${DB_USER}'
+            MARIADB_PASSWORD: '${DB_PASSWORD:-secret}'
+        env_file:
+            - ".env"
+        restart: always
+        volumes:
+            - 'mariadb-data:/var/lib/mysql'
+        networks:
+            - phone-book
+        healthcheck:
+#            test: "healthcheck.sh --su-mysql --connect --innodb_initialized"
+            test: ["CMD", "healthcheck.sh", "--su-mysql", "--connect", "--innodb_initialized"]
+            retries: 3
+            timeout: 5s
+
+    myadmin:
+        image: phpmyadmin/phpmyadmin
+        container_name: '${MY_ADMIN_CONTAINER_NAME:-phpmyadmin}'
+        ports:
+            - '${MY_ADMIN_PORT:-8088}:80'
+        environment:
+            PMA_ARBITRARY: '${MY_ADMIN_ARBITRARY:-1}'
+            PMA_HOST: '${DB_HOST:-db}'
+        restart: always
+        networks:
+            - phone-book
+        depends_on:
+            - db
+
+    swagger-ui:
+        image: swaggerapi/swagger-ui
+        ports:
+            - '8080:8080'
+        volumes:
+            - './swagger.json:/app/swagger.json'
+        environment:
+            SWAGGER_JSON: /app/swagger.json
+        restart: always
+        networks:
+            - phone-book
+
+networks:
+    phone-book:
+        driver: bridge
+
+volumes:
+    mariadb-data:
+        driver: local
