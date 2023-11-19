@@ -67,6 +67,10 @@ class Container implements ContainerInterface
      * @param string $id
      * @param array|null $boundParameters
      * @return mixed
+     * @throws ClassNotFoundException
+     * @throws ContainerException
+     * @throws ParameterNotFoundException
+     * @throws ReflectionException
      */
     public function get(string $id, ?array $boundParameters = []): mixed
     {
@@ -119,6 +123,10 @@ class Container implements ContainerInterface
      * @param string $abstract
      * @param string|null $concrete
      * @return mixed
+     * @throws ClassNotFoundException
+     * @throws ContainerException
+     * @throws ParameterNotFoundException
+     * @throws ReflectionException
      */
     public function singleton(string $abstract, ?string $concrete = null): mixed
     {
@@ -138,84 +146,84 @@ class Container implements ContainerInterface
      * @param string|null $method
      * @param array|null $boundParameters
      * @return mixed|void
+     * @throws ClassNotFoundException
+     * @throws ContainerException
+     * @throws ParameterNotFoundException
+     * @throws ReflectionException
      */
     public function call(string|Closure $callable, ?string $method = null, ?array $boundParameters = [])
     {
-        try {
-            $methodReflector = ($callable instanceof Closure)
-                ? new ReflectionFunction($callable)
-                : new ReflectionMethod($callable, $method);
+        $methodReflector = ($callable instanceof Closure)
+            ? new ReflectionFunction($callable)
+            : new ReflectionMethod($callable, $method);
 
-            $methodParameters = $this->getArguments($methodReflector, $boundParameters);
+        $methodParameters = $this->getArguments($methodReflector, $boundParameters);
 
-            if ($methodReflector->isClosure()) {
-                return $methodReflector->invokeArgs($methodParameters);
-            }
-
-            $class = $this->get($callable, $boundParameters);
-
-            return $methodReflector->invokeArgs($class, $methodParameters);
-        } catch (\Throwable $e) {
-
+        if ($methodReflector->isClosure()) {
+            return $methodReflector->invokeArgs($methodParameters);
         }
+
+        $class = $this->get($callable, $boundParameters);
+
+        return $methodReflector->invokeArgs($class, $methodParameters);
     }
 
     /**
      * @param string $id
      * @param array|null $boundParameters
      * @return mixed|void
+     * @throws ClassNotFoundException
+     * @throws ContainerException
+     * @throws ParameterNotFoundException
+     * @throws ReflectionException
      */
     private function resolve(string $id, ?array $boundParameters = [])
     {
-        try {
-            if ($this->isSingleton($id)) {
-                return $this->singletons[$id];
-            }
-
-            $reflector = $this->getReflector($id);
-
-            if ($reflector->isInterface()) {
-                return $this->resolveInterface($reflector);
-            }
-
-            if (!$reflector->isInstantiable()) {
-                throw new ContainerException(
-                    "Error: {$reflector->getName()} cannot be instantiated"
-                );
-            }
-
-            $constructor = $reflector->getConstructor();
-            if (!$constructor) {
-                return $reflector->newInstance();
-            }
-
-            $args = $this->getArguments($constructor, $boundParameters);
-
-            return $reflector->newInstanceArgs($args);
-        } catch (\Throwable $e) {
-
+        if ($this->isSingleton($id)) {
+            return $this->singletons[$id];
         }
+
+        $reflector = $this->getReflector($id);
+
+        if ($reflector->isInterface()) {
+            return $this->resolveInterface($reflector);
+        }
+
+        if (!$reflector->isInstantiable()) {
+            throw new ContainerException(
+                "Error: {$reflector->getName()} cannot be instantiated"
+            );
+        }
+
+        $constructor = $reflector->getConstructor();
+        if (!$constructor) {
+            return $reflector->newInstance();
+        }
+
+        $args = $this->getArguments($constructor, $boundParameters);
+
+        return $reflector->newInstanceArgs($args);
     }
 
     /**
      * @param ReflectionClass $reflector
      * @return mixed|void
+     * @throws ClassNotFoundException
+     * @throws ContainerException
+     * @throws ParameterNotFoundException
+     * @throws ReflectionException
      */
     private function resolveInterface(ReflectionClass $reflector)
     {
-        try {
-            if ($this->has($reflector->getName())) {
-                return $this->get(
-                    $this->entries[$reflector->getName()]
-                );
-            }
-
-            throw new ClassNotFoundException(
-                "Class {$reflector->getName()} not found"
+        if ($this->has($reflector->getName())) {
+            return $this->get(
+                $this->entries[$reflector->getName()]
             );
-        } catch (\Throwable $e) {
-
         }
+
+        throw new ClassNotFoundException(
+            "Class {$reflector->getName()} not found"
+        );
     }
 
 
@@ -239,6 +247,7 @@ class Container implements ContainerInterface
      * @param ReflectionMethod|ReflectionFunction $method
      * @param array|null $boundParameters
      * @return array
+     * @throws ParameterNotFoundException
      */
     private function getArguments(
         ReflectionMethod|ReflectionFunction $method,
@@ -248,35 +257,31 @@ class Container implements ContainerInterface
         $params = $method->getParameters();
         $calledClass = $method->getClosureCalledClass()?->getName();
 
-        try {
-            foreach ($params as $param) {
-                $name = $param->getName();
-                $type = $param->getType();
+        foreach ($params as $param) {
+            $name = $param->getName();
+            $type = $param->getType();
 
-                $parameter = null;
+            $parameter = null;
 
-                if (!$type) {
-                    $parameter = $this->getBoundParameter($name, $boundParameters);
-                }
-
-                if ($type instanceof \ReflectionNamedType) {
-                    $parameter = $this->getNamedParameter($param, $boundParameters);
-                }
-
-                if (is_null($parameter) && $param->isDefaultValueAvailable()) {
-                    $parameter = $param->getDefaultValue();
-                }
-
-                if (is_null($parameter)) {
-                    throw new ParameterNotFoundException(
-                        "Can not resolve parameter '$name' of type '$type' in method '{$method->getName()}' of class '$calledClass'"
-                    );
-                }
-
-                $args[$name] = $parameter;
+            if (!$type) {
+                $parameter = $this->getBoundParameter($name, $boundParameters);
             }
-        } catch (\Throwable $e) {
 
+            if ($type instanceof \ReflectionNamedType) {
+                $parameter = $this->getNamedParameter($param, $boundParameters);
+            }
+
+            if (is_null($parameter) && $param->isDefaultValueAvailable()) {
+                $parameter = $param->getDefaultValue();
+            }
+
+            if (is_null($parameter)) {
+                throw new ParameterNotFoundException(
+                    "Can not resolve parameter '$name' of type '$type' in method '{$method->getName()}' of class '$calledClass'"
+                );
+            }
+
+            $args[$name] = $parameter;
         }
 
         return $args;
@@ -287,8 +292,10 @@ class Container implements ContainerInterface
      * @param array $boundParameters
      * @return mixed
      */
-    private function getBoundParameter(string $name, array $boundParameters): mixed
-    {
+    private function getBoundParameter(
+        string $name,
+        array $boundParameters
+    ): mixed {
         return $boundParameters[$name] ?? null;
     }
 
@@ -296,19 +303,21 @@ class Container implements ContainerInterface
      * @param ReflectionParameter $param
      * @param array $boundParameters
      * @return mixed
+     * @throws ClassNotFoundException
+     * @throws ContainerException
+     * @throws ParameterNotFoundException
+     * @throws ReflectionException
      */
-    private function getNamedParameter(ReflectionParameter $param, array $boundParameters): mixed
-    {
+    private function getNamedParameter(
+        ReflectionParameter $param,
+        array $boundParameters
+    ): mixed {
         $name = $param->getName();
         $type = $param->getType();
         $typeName = $param->getType()->getName();
 
-        try {
-            if (! $type->isBuiltin()) {
-                return $this->get($typeName, $boundParameters);
-            }
-        } catch (\Throwable $e) {
-
+        if (!$type->isBuiltin()) {
+            return $this->get($typeName, $boundParameters);
         }
 
         return $this->getBoundParameter($name, $boundParameters);
