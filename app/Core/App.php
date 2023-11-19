@@ -9,6 +9,7 @@ use App\Core\ErrorHandler\ErrorHandler;
 use App\Core\Helpers\Env;
 use App\Core\Logger\Log;
 use App\Core\ServiceProvider\ServiceProvider;
+use App\Core\Session\Session;
 use Throwable;
 
 /**
@@ -60,6 +61,7 @@ class App extends Container
             $this->configureErrorHandling();
             $this->singleton(Log::class);
             $this->singleton(ServiceProvider::class);
+            $this->singleton(Session::class);
         } catch (Throwable $e) {
             ErrorHandler::handleExceptions($e);
         }
@@ -136,5 +138,13 @@ class App extends Container
     private function serviceProvider(): ServiceProvider
     {
         return $this->make(ServiceProvider::class);
+    }
+
+    /**
+     * @return Session
+     */
+    public function session(): Session
+    {
+        return $this->make(Session::class);
     }
 }
