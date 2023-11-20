@@ -8,6 +8,8 @@ use App\Core\Container\Container;
 use App\Core\ErrorHandler\ErrorHandler;
 use App\Core\Helpers\Env;
 use App\Core\Logger\Log;
+use App\Core\Middleware\MiddlewareHandler;
+use App\Core\Middleware\MiddlewareRegister;
 use App\Core\Request\Request;
 use App\Core\ServiceProvider\ServiceProvider;
 use App\Core\Session\Session;
@@ -64,6 +66,8 @@ class App extends Container
             $this->singleton(ServiceProvider::class);
             $this->singleton(Session::class);
             $this->singleton(Request::class);
+            $this->singleton(MiddlewareRegister::class);
+            $this->singleton(MiddlewareHandler::class);
         } catch (Throwable $e) {
             ErrorHandler::handleExceptions($e);
         }
