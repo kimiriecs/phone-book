@@ -11,6 +11,7 @@ use App\Core\Logger\Log;
 use App\Core\Middleware\MiddlewareHandler;
 use App\Core\Middleware\MiddlewareRegister;
 use App\Core\Request\Request;
+use App\Core\Router\Router;
 use App\Core\ServiceProvider\ServiceProvider;
 use App\Core\Session\Session;
 use Throwable;
@@ -48,6 +49,7 @@ class App extends Container
         try {
             $this->initialize($basePath);
             $this->serviceProvider()->register();
+            $this->router()->dispatch();
         } catch (Throwable $e) {
             ErrorHandler::handleExceptions($e);
         }
@@ -68,6 +70,7 @@ class App extends Container
             $this->singleton(Request::class);
             $this->singleton(MiddlewareRegister::class);
             $this->singleton(MiddlewareHandler::class);
+            $this->singleton(Router::class);
         } catch (Throwable $e) {
             ErrorHandler::handleExceptions($e);
         }
@@ -160,5 +163,13 @@ class App extends Container
     public function request(): Request
     {
         return $this->make(Request::class);
+    }
+
+    /**
+     * @return Router
+     */
+    public function router(): Router
+    {
+        return $this->make(Router::class);
     }
 }
