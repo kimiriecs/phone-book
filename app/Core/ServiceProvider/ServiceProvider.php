@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Core\ServiceProvider;
 
 use App\Core\App;
+use App\Core\Database\BaseRepository;
+use App\Core\Interfaces\RepositoryInterface;
 
 /**
  * Class ServiceProvider
@@ -31,5 +33,6 @@ class ServiceProvider
      */
     public function register(): void
     {
+        $this->app->bind(RepositoryInterface::class, BaseRepository::class);
     }
 }

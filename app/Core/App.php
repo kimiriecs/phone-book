@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Core;
 
 use App\Core\Container\Container;
+use App\Core\Database\DB;
 use App\Core\ErrorHandler\ErrorHandler;
 use App\Core\Helpers\Env;
 use App\Core\Logger\Log;
@@ -71,6 +72,7 @@ class App extends Container
             $this->singleton(MiddlewareRegister::class);
             $this->singleton(MiddlewareHandler::class);
             $this->singleton(Router::class);
+            $this->singleton(DB::class);
         } catch (Throwable $e) {
             ErrorHandler::handleExceptions($e);
         }
@@ -171,5 +173,13 @@ class App extends Container
     public function router(): Router
     {
         return $this->make(Router::class);
+    }
+
+    /**
+     * @return DB
+     */
+    public function db(): DB
+    {
+        return $this->make(DB::class);
     }
 }

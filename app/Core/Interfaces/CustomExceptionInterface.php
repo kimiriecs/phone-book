@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Core\Exceptions;
+namespace App\Core\Interfaces;
 
 /**
  * Interface CustomExceptionInterface
  *
- * @package App\Core\Exceptions
+ * @package App\Core\Interfaces
  */
 interface CustomExceptionInterface
 {

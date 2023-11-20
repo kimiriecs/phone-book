@@ -6,6 +6,9 @@ use App\Core\App;
 use App\Core\Logger\Log;
 use App\Core\Router\Router;
 
+/**
+ * @return App
+ */
 function app(): App
 {
     return App::instance();
