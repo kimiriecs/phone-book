@@ -8,6 +8,7 @@ use App\Core\Container\Container;
 use App\Core\ErrorHandler\ErrorHandler;
 use App\Core\Helpers\Env;
 use App\Core\Logger\Log;
+use App\Core\ServiceProvider\ServiceProvider;
 use Throwable;
 
 /**
@@ -42,6 +43,7 @@ class App extends Container
     {
         try {
             $this->initialize($basePath);
+            $this->serviceProvider()->register();
         } catch (Throwable $e) {
             ErrorHandler::handleExceptions($e);
         }
@@ -57,6 +59,7 @@ class App extends Container
             $this->setBasePath($basePath);
             $this->configureErrorHandling();
             $this->singleton(Log::class);
+            $this->singleton(ServiceProvider::class);
         } catch (Throwable $e) {
             ErrorHandler::handleExceptions($e);
         }
@@ -125,5 +128,13 @@ class App extends Container
     public function log(): Log
     {
         return $this->make(Log::class);
+    }
+
+    /**
+     * @return ServiceProvider
+     */
+    private function serviceProvider(): ServiceProvider
+    {
+        return $this->make(ServiceProvider::class);
     }
 }
