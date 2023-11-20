@@ -8,6 +8,7 @@ use App\Core\Container\Container;
 use App\Core\ErrorHandler\ErrorHandler;
 use App\Core\Helpers\Env;
 use App\Core\Logger\Log;
+use App\Core\Request\Request;
 use App\Core\ServiceProvider\ServiceProvider;
 use App\Core\Session\Session;
 use Throwable;
@@ -62,6 +63,7 @@ class App extends Container
             $this->singleton(Log::class);
             $this->singleton(ServiceProvider::class);
             $this->singleton(Session::class);
+            $this->singleton(Request::class);
         } catch (Throwable $e) {
             ErrorHandler::handleExceptions($e);
         }
@@ -146,5 +148,13 @@ class App extends Container
     public function session(): Session
     {
         return $this->make(Session::class);
+    }
+
+    /**
+     * @return Request
+     */
+    public function request(): Request
+    {
+        return $this->make(Request::class);
     }
 }
