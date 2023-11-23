@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace DataBase\Migrations;
 
-use App\Core\Database\Migration;
+use App\Core\Database\Migration\Migration;
 
 /**
  * Class CreateContactsTable

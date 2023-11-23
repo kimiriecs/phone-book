@@ -6,8 +6,9 @@ namespace App\Core\Commands\DataBase;
 
 use App\Core\App;
 use App\Core\Commands\Command;
-use App\Core\Database\Migration;
-use App\Core\Helpers\Path;
+use App\Core\Commands\Common\ListCommands;
+use App\Core\Database\Migration\Migration;
+use App\Core\Database\Migration\MigrationRegister;
 
 /**
  * Class MigrateTables
@@ -22,14 +23,22 @@ class MigrateTables extends Command
      */
     public function run(array $args): void
     {
-        $migrations = require Path::migrations('register');
+        $toMigrate = MigrationRegister::toMigrate();
+        if (empty($toMigrate)) {
+            echo ListCommands::GREEN . "Nothing to migrate..." . ListCommands::RESET . "\n";
+            exit();
+        }
 
-        foreach ($migrations as $migrationClass) {
+        $migrated = [];
+        foreach ($toMigrate as $migrationClass) {
             /** @var Migration $migration */
             $migration = App::instance()->make($migrationClass);
-
             $migration->run();
+            $migrated[] = $migrationClass;
+            echo ListCommands::GREEN . "$migrationClass was migrated..." . ListCommands::RESET . "\n";
         }
+
+        MigrationRegister::setMigrated($migrated);
     }
 
     /**

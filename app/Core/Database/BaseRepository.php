@@ -232,12 +232,10 @@ abstract class BaseRepository implements RepositoryInterface
     {
         $table = $this->getEntityTable();
 
-        $columns = array_keys($data[0]);
         $preparedColumns = implode(',', array_keys($data[0]));
-        $columnsPlaceholders = $this->getColumnsPlaceholders($columns);
 
         $allValues = [];
-        $rows = [];
+        $preparedPlaceholders = [];
         foreach ($data as $index => $row) {
             $row = array_map(function ($item) {
                 if (is_bool($item)) {
@@ -246,16 +244,16 @@ abstract class BaseRepository implements RepositoryInterface
                 return $item;
             }, $row);
 
-            $keyPairs = [];
+            $placeholders = [];
             foreach ($row as $column => $value) {
-                $param = ':' . $column . $index;
-                $keyPairs[] = $param;
-                $allValues[$param] = $value;
+                $placeholder = ':' . $column . $index;
+                $placeholders[] = $placeholder;
+                $allValues[$placeholder] = $value;
             }
-            $rows[] = '(' . implode(',', $keyPairs) . ')';
+            $preparedPlaceholders[] = '(' . implode(',', $placeholders) . ')';
         }
 
-        $allPlaceholders = implode(',', $rows);
+        $allPlaceholders = implode(',', $preparedPlaceholders);
         $query = "INSERT INTO $table ($preparedColumns) VALUES $allPlaceholders RETURNING id";
         $statement = $this->getPreparedStatement($query);
         $success = $statement->execute($allValues);

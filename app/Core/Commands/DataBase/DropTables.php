@@ -6,8 +6,9 @@ namespace App\Core\Commands\DataBase;
 
 use App\Core\App;
 use App\Core\Commands\Command;
-use App\Core\Database\Migration;
-use App\Core\Helpers\Path;
+use App\Core\Commands\Common\ListCommands;
+use App\Core\Database\Migration\Migration;
+use App\Core\Database\Migration\MigrationRegister;
 
 /**
  * Class DropTables
@@ -22,13 +23,23 @@ class DropTables extends Command
      */
     public function run(array $args): void
     {
-        $migrations = require Path::migrations('register');
+        $toDrop = MigrationRegister::toRollback();
+        if (empty($toDrop)) {
+            echo ListCommands::GREEN . "Nothing to drop..." . ListCommands::RESET . "\n";
+            exit();
+        }
 
-        foreach (array_reverse($migrations) as $migrationClass) {
+        foreach ($toDrop as $migrationClass) {
             /** @var Migration $migration */
             $migration = App::instance()->make($migrationClass);
 
             $migration->back();
+            echo ListCommands::GREEN . "$migrationClass was dropped..." . ListCommands::RESET . "\n";
+        }
+
+        if (!MigrationRegister::tableExists(MigrationRegister::TABLE)) {
+            echo ListCommands::GREEN . "The last migration was dropped..." . ListCommands::RESET . "\n";
+            exit();
         }
     }
 

@@ -43,7 +43,7 @@ class ServiceProvider
      */
     public function registerCommands(): void
     {
-        foreach (CommandRegister::commands() as $commandClass) {
+        foreach (CommandRegister::list() as $commandClass) {
             /** @var Command $command */
             $command = $this->app->make($commandClass);
             $this->app->bind($command->getName(), $commandClass);

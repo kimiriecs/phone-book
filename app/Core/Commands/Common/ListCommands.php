@@ -30,7 +30,7 @@ class ListCommands extends Command
      */
     public function run(array $args): void
     {
-        $commands = CommandRegister::commands();
+        $commands = CommandRegister::list();
         $list = [];
         foreach ($commands as $commandClass) {
             /** @var Command $command */

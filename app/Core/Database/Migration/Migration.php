@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Core\Database;
+namespace App\Core\Database\Migration;
 
 use App\Core\App;
 use App\Core\ErrorHandler\ErrorHandler;
@@ -11,7 +11,7 @@ use Throwable;
 /**
  * Class Migration
  *
- * @package App\Core\Database
+ * @package App\Core\Database\Migration
  */
 class Migration
 {
