@@ -14,6 +14,7 @@ return [
         'database' => "$basePath/database/",
         'migrations' => "$basePath/database/Migrations/",
         'seeders' => "$basePath/database/Seeders/",
+        'commands' => "$basePath/app/Core/Commands/",
     ],
 
     'timezone' => 'Europe/Kiev'

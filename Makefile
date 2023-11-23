@@ -27,11 +27,10 @@ composer-install:
 composer-autoload:
 	$(DOCKER_COMPOSE_APP) composer dump-autoload
 
-db-fresh:
-	$(DOCKER_COMPOSE_APP) php database/Migrations/create_tables.php
-
-db-seed:
-	$(DOCKER_COMPOSE_APP) php database/Seeders/tables_seeder.php
+command:
+	$(DOCKER_COMPOSE_APP) php command.php $(filter-out $@,$(MAKECMDGOALS))
+%:
+	@:
 
 api-doc:
 	$(DOCKER_COMPOSE_APP) ./vendor/bin/openapi --output swagger.json app

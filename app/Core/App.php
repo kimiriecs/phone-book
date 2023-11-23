@@ -95,8 +95,12 @@ class App extends Container
     {
         try {
             $this->initialize();
+
+            if (PHP_SAPI !== 'cli') {
+                $this->router()->dispatch();
+            }
+
             $this->db()->connect();
-            $this->router()->dispatch();
         } catch (Throwable $e) {
             ErrorHandler::handleExceptions($e);
         }
@@ -112,12 +116,16 @@ class App extends Container
 
             $this->singleton(ServiceProvider::class);
             $this->serviceProvider()->register();
+            $this->serviceProvider()->registerCommands();
 
-            $this->singleton(Session::class);
-            $this->singleton(Request::class);
-            $this->singleton(MiddlewareRegister::class);
-            $this->singleton(MiddlewareHandler::class);
-            $this->singleton(Router::class);
+            if (PHP_SAPI !== 'cli') {
+                $this->singleton(Session::class);
+                $this->singleton(Request::class);
+                $this->singleton(MiddlewareRegister::class);
+                $this->singleton(MiddlewareHandler::class);
+                $this->singleton(Router::class);
+            }
+
             $this->singleton(DB::class);
         } catch (Throwable $e) {
             ErrorHandler::handleExceptions($e);

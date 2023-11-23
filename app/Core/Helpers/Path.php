@@ -80,4 +80,13 @@ class Path
     {
         return Config::get('app.paths.seeders') . $path . '.php';
     }
+
+    /**
+     * @param string $path
+     * @return string
+     */
+    public static function commands(string $path): string
+    {
+        return Config::get('app.paths.commands') . $path . '.php';
+    }
 }
