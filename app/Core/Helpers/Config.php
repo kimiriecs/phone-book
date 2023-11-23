@@ -23,11 +23,10 @@ class Config
         if (self::runTimeConfig($key)) {
             return self::runTimeConfig($key);
         }
-
         $keyNameParts = explode('.', $key);
         $configFileName = array_shift($keyNameParts) . '.php';
         $key = implode('.', $keyNameParts);
-        $config = require App::instance()->configPath() . $configFileName;
+        $config = require App::configPath() . $configFileName;
 
         return Arr::get($key, $config) ?? $default;
     }

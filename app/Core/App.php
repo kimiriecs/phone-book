@@ -6,8 +6,8 @@ namespace App\Core;
 
 use App\Core\Container\Container;
 use App\Core\Database\DB;
+use App\Core\Env\Env;
 use App\Core\ErrorHandler\ErrorHandler;
-use App\Core\Helpers\Env;
 use App\Core\Logger\Log;
 use App\Core\Middleware\MiddlewareHandler;
 use App\Core\Middleware\MiddlewareRegister;
@@ -29,62 +29,44 @@ class App extends Container
     /**
      * @var string $basePath
      */
-    protected string $basePath;
+    private static string $basePath;
 
     /**
-     * App Constructor
+     * @var Env $env
      */
-    protected function __construct()
-    {
-        parent::__construct();
+    private static Env $env;
 
-        $this->configureErrorHandling();
+    /**
+     * @param string $basePath
+     * @return App
+     */
+    public static function start(string $basePath): App
+    {
+        $app = self::instance();
+        $app->setBasePath($basePath);
+        $app->setEnvironment($basePath);
+        $app->configureErrorHandling();
+        $app->run();
+
+        return $app;
     }
 
     /**
      * @param string $basePath
      * @return void
      */
-    public function run(string $basePath): void
+    private function setBasePath(string $basePath): void
     {
-        try {
-            $this->initialize($basePath);
-            $this->serviceProvider()->register();
-            $this->router()->dispatch();
-        } catch (Throwable $e) {
-            ErrorHandler::handleExceptions($e);
-        }
+        self::$basePath = $basePath;
     }
 
     /**
      * @param string $basePath
      * @return void
      */
-    private function initialize(string $basePath): void
+    private function setEnvironment(string $basePath): void
     {
-        try {
-            $this->setBasePath($basePath);
-            $this->configureErrorHandling();
-            $this->singleton(Log::class);
-            $this->singleton(ServiceProvider::class);
-            $this->singleton(Session::class);
-            $this->singleton(Request::class);
-            $this->singleton(MiddlewareRegister::class);
-            $this->singleton(MiddlewareHandler::class);
-            $this->singleton(Router::class);
-            $this->singleton(DB::class);
-        } catch (Throwable $e) {
-            ErrorHandler::handleExceptions($e);
-        }
-    }
-
-    /**
-     * @param string $basePath
-     * @return void
-     */
-    public function setBasePath(string $basePath): void
-    {
-        $this->basePath = $basePath;
+        self::$env = new Env($basePath);
     }
 
     /**
@@ -92,7 +74,7 @@ class App extends Container
      */
     private function configureErrorHandling(): void
     {
-        if (Env::getBoolean('APP_DEBUG') === true) {
+        if (self::env()->getBoolean('APP_DEBUG') === true) {
             // Debug is enabled. Show all errors
             error_reporting(E_ALL);
             ini_set('display_errors', 1);
@@ -107,29 +89,74 @@ class App extends Container
     }
 
     /**
-     * @return string
+     * @return void
      */
-    public function basePath(): string
+    private function run(): void
     {
-        return $this->basePath;
+        try {
+            $this->initialize();
+            $this->db()->connect();
+            $this->router()->dispatch();
+        } catch (Throwable $e) {
+            ErrorHandler::handleExceptions($e);
+        }
+    }
+
+    /**
+     * @return void
+     */
+    private function initialize(): void
+    {
+        try {
+            $this->singleton(Log::class);
+
+            $this->singleton(ServiceProvider::class);
+            $this->serviceProvider()->register();
+
+            $this->singleton(Session::class);
+            $this->singleton(Request::class);
+            $this->singleton(MiddlewareRegister::class);
+            $this->singleton(MiddlewareHandler::class);
+            $this->singleton(Router::class);
+            $this->singleton(DB::class);
+        } catch (Throwable $e) {
+            ErrorHandler::handleExceptions($e);
+        }
     }
 
     /**
      * @return string
      */
-    public function configPath(): string
+    public static function basePath(): string
     {
-        return $this->basePath . '/' . self::CONFIG_PATH . '/';
+        return self::$basePath;
+    }
+
+    /**
+     * @return Env
+     */
+    public static function env(): Env
+    {
+        return self::$env;
+    }
+
+    /**
+     * @return string
+     */
+    public static function configPath(): string
+    {
+        return self::basePath() . '/' . self::CONFIG_PATH . '/';
     }
 
     /**
      * @param string $className
+     * @param array|null $boundParameters
      * @return mixed
      */
-    public function make(string $className): mixed
+    public function make(string $className, ?array $boundParameters = []): mixed
     {
         try {
-            return self::instance()->get($className);
+            return self::instance()->get($className, $boundParameters);
         } catch (Throwable $e) {
             ErrorHandler::handleExceptions($e);
         }
@@ -138,9 +165,9 @@ class App extends Container
     /**
      * @return Log
      */
-    public function log(): Log
+    public static function log(): Log
     {
-        return $this->make(Log::class);
+        return self::instance()->make(Log::class);
     }
 
     /**
@@ -148,38 +175,38 @@ class App extends Container
      */
     private function serviceProvider(): ServiceProvider
     {
-        return $this->make(ServiceProvider::class);
+        return self::instance()->make(ServiceProvider::class);
     }
 
     /**
      * @return Session
      */
-    public function session(): Session
+    public static function session(): Session
     {
-        return $this->make(Session::class);
+        return self::instance()->make(Session::class);
     }
 
     /**
      * @return Request
      */
-    public function request(): Request
+    public static function request(): Request
     {
-        return $this->make(Request::class);
+        return self::instance()->make(Request::class);
     }
 
     /**
      * @return Router
      */
-    public function router(): Router
+    public static function router(): Router
     {
-        return $this->make(Router::class);
+        return self::instance()->make(Router::class);
     }
 
     /**
      * @return DB
      */
-    public function db(): DB
+    public static function db(): DB
     {
-        return $this->make(DB::class);
+        return self::instance()->make(DB::class);
     }
 }

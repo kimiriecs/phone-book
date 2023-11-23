@@ -57,6 +57,6 @@ class View
      */
     private static function getFullTemplatePath(string $template): string
     {
-        return Path::viewsPath($template);
+        return Path::views($template);
     }
 }

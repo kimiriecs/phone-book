@@ -129,7 +129,7 @@ class Route
         );
 
         try {
-            App::instance()->router()->register($route);
+            App::router()->register($route);
         } catch (Throwable $e) {
             ErrorHandler::handleExceptions($e);
         }
@@ -232,25 +232,28 @@ class Route
     }
 
     /**
-     * @param string|null $name
+     * @param string $name
      * @return Route
-     * @throws Exception
      */
-    public function name(?string $name): Route
+    public function name(string $name): Route
     {
-        foreach (router()->routes() as $routesByMethod) {
-            $routes = array_filter($routesByMethod, function (Route $route) use ($name) {
-                return $route->getName() === $name;
-            });
+        try {
+            foreach (App::router()->routes() as $routesByMethod) {
+                $routes = array_filter($routesByMethod, function (Route $route) use ($name) {
+                    return $route->getName() === $name;
+                });
 
-            if (!empty($routes)) {
-                throw new Exception("Route with provided name already exists");
+                if (!empty($routes)) {
+                    throw new Exception("Route with provided name already exists");
+                }
             }
+
+            $this->name = $name;
+
+            return $this;
+        } catch (Throwable $e) {
+            ErrorHandler::handleExceptions($e);
         }
-
-        $this->name = $name;
-
-        return $this;
     }
 
     /**

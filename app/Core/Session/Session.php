@@ -21,10 +21,10 @@ class Session
     /**
      * @return void
      */
-    public static function start(): void
+    public function start(): void
     {
         if (session_status() !== PHP_SESSION_ACTIVE) {
-            self::setConfiguration();
+            $this->setConfiguration();
             session_start();
         }
     }
@@ -32,7 +32,7 @@ class Session
     /**
      * @return void
      */
-    private static function setConfiguration(): void
+    private function setConfiguration(): void
     {
         $config = Config::get('session');
 
@@ -41,7 +41,7 @@ class Session
         session_name($config['session_name']);
 
         session_set_cookie_params([
-            'lifetime' => self::getLifeTimeInSeconds($config['life_time']),
+            'lifetime' => $this->getLifeTimeInSeconds($config['life_time']),
             'path' => $config['path'],
             'domain' => $config['domain'],
             'secure' => $config['secure'],
@@ -54,32 +54,32 @@ class Session
      * @return void
      * @throws Exception
      */
-    public static function setCsrf(): void
+    public function setCsrf(): void
     {
-        self::set(self::SESSION_CSRF_TOKEN_KEY, bin2hex(random_bytes(32)));
+        $this->set(self::SESSION_CSRF_TOKEN_KEY, bin2hex(random_bytes(32)));
     }
 
     /**
      * @return string|null
      */
-    public static function getCsrf(): ?string
+    public function getCsrf(): ?string
     {
-        return self::get(self::SESSION_CSRF_TOKEN_KEY);
+        return $this->get(self::SESSION_CSRF_TOKEN_KEY);
     }
 
     /**
      * @param string $csrf
      * @return bool
      */
-    public static function checkCsrf(string $csrf): bool
+    public function checkCsrf(string $csrf): bool
     {
-        return self::getCsrf() === $csrf;
+        return $this->getCsrf() === $csrf;
     }
 
     /**
      * @return mixed
      */
-    public static function all(): array
+    public function all(): array
     {
         return $_SESSION;
     }
@@ -88,7 +88,7 @@ class Session
      * @param string $key
      * @return mixed
      */
-    public static function get(string $key): mixed
+    public function get(string $key): mixed
     {
         return Arr::get($key, $_SESSION);
     }
@@ -97,7 +97,7 @@ class Session
      * @param string $key
      * @return bool
      */
-    public static function has(string $key): bool
+    public function has(string $key): bool
     {
         return Arr::exists($key, $_SESSION);
     }
@@ -107,7 +107,7 @@ class Session
      * @param mixed $value
      * @return void
      */
-    public static function set(string $key, mixed $value): void
+    public function set(string $key, mixed $value): void
     {
         if (session_status() === PHP_SESSION_ACTIVE) {
             Arr::set($key, $value, $_SESSION);
@@ -118,7 +118,7 @@ class Session
      * @param string $key
      * @return void
      */
-    public static function unset(string $key): void
+    public function unset(string $key): void
     {
         if (session_status() === PHP_SESSION_ACTIVE) {
             Arr::unset($key, $_SESSION);
@@ -142,7 +142,7 @@ class Session
      * @param int $lifeTimeMinutes
      * @return int
      */
-    private static function getLifeTimeInSeconds(int $lifeTimeMinutes): int
+    private function getLifeTimeInSeconds(int $lifeTimeMinutes): int
     {
         $seconds = $lifeTimeMinutes * self::SESSION_LIFETIME_MINUTE_TO_SECONDS_MULTIPLIER;
 

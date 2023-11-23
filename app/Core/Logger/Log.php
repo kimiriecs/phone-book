@@ -43,7 +43,7 @@ class Log
         }
 
         $formatter = new CustomLineFormatter(Config::get('log.output'), Config::get('log.date_format'));
-        $stream = new StreamHandler(Path::logsPath(self::DEFAULT_LOG_FILE_NAME), Level::Debug);
+        $stream = new StreamHandler(Path::logs(self::DEFAULT_LOG_FILE_NAME), Level::Debug);
         $stream->setFormatter($formatter);
         $this->logger->pushHandler($stream)->setTimezone(new DateTimeZone(Config::get('app.timezone')));
     }

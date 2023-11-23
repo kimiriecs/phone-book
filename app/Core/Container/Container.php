@@ -80,6 +80,8 @@ class Container implements ContainerInterface
             if ($entry instanceof Closure || is_callable($entry)) {
                 return $entry($this, $boundParameters);
             }
+
+            $id = $entry;
         }
 
         return $this->resolve($id, $boundParameters);
@@ -122,20 +124,21 @@ class Container implements ContainerInterface
     /**
      * @param string $abstract
      * @param string|null $concrete
+     * @param array|null $boundParameters
      * @return mixed
      * @throws ClassNotFoundException
      * @throws ContainerException
      * @throws ParameterNotFoundException
      * @throws ReflectionException
      */
-    public function singleton(string $abstract, ?string $concrete = null): mixed
+    public function singleton(string $abstract, ?string $concrete = null, ?array $boundParameters = []): mixed
     {
         if (is_null($concrete)) {
             $concrete = $abstract;
         }
 
         if (!$this->isSingleton($abstract)) {
-            $this->singletons[$abstract] = $this->resolve($concrete);
+            $this->singletons[$abstract] = $this->resolve($concrete, $boundParameters);
         }
 
         return $this->singletons[$abstract];
@@ -247,7 +250,10 @@ class Container implements ContainerInterface
      * @param ReflectionMethod|ReflectionFunction $method
      * @param array|null $boundParameters
      * @return array
+     * @throws ClassNotFoundException
+     * @throws ContainerException
      * @throws ParameterNotFoundException
+     * @throws ReflectionException
      */
     private function getArguments(
         ReflectionMethod|ReflectionFunction $method,

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Core\Request;
 
+use App\Core\App;
 use App\Core\Exceptions\InvalidUriException;
 use App\Core\Helpers\Arr;
-use App\Core\Session\Session;
 
 /**
  * Class Request
@@ -30,7 +30,7 @@ class Request
         $this->uri = $this->validateUri();
         $this->post = $this->satinize($_POST);
         $this->get = $this->satinize($_GET);
-        Session::start();
+        App::session()->start();
         $this->setPrevUri();
     }
 
@@ -94,21 +94,21 @@ class Request
     }
 
     /**
-     * @param string $key
+     * @param string|null $key
      * @return mixed
      */
-    public function get(string $key): mixed
+    public function get(?string $key = null): mixed
     {
-        return Arr::get($key, $this->get);
+        return $key ? Arr::get($key, $this->get) : $this->get;
     }
 
     /**
-     * @param string $key
+     * @param string|null $key
      * @return mixed
      */
-    public function post(string $key): mixed
+    public function post(?string $key = null): mixed
     {
-        return Arr::get($key, $this->post);
+        return $key ? Arr::get($key, $this->post) : $this->post;
     }
 
     /**
@@ -127,7 +127,7 @@ class Request
      */
     public function prevUri(): ?string
     {
-        return Session::get(self::SESSION_PREVIOUS_URI_KEY);
+        return App::session()->get(self::SESSION_PREVIOUS_URI_KEY);
     }
 
     /**
@@ -135,10 +135,10 @@ class Request
      */
     public function setPrevUri(): void
     {
-        if (Session::get(self::SESSION_CURRENT_URI_KEY)) {
-            Session::set(self::SESSION_PREVIOUS_URI_KEY, Session::get(self::SESSION_CURRENT_URI_KEY));
+        if (App::session()->get(self::SESSION_CURRENT_URI_KEY)) {
+            App::session()->set(self::SESSION_PREVIOUS_URI_KEY, App::session()->get(self::SESSION_CURRENT_URI_KEY));
         }
 
-        Session::set(self::SESSION_CURRENT_URI_KEY, $this->uri());
+        App::session()->set(self::SESSION_CURRENT_URI_KEY, $this->uri());
     }
 }

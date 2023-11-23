@@ -4,11 +4,16 @@ declare(strict_types=1);
 
 use App\Core\App;
 
+$basePath = App::basePath();
+
 return [
     'paths' => [
-        'routes' => App::instance()->basePath() . '/routes/',
-        'views' => App::instance()->basePath() . '/resources/views/',
-        'logs' => App::instance()->basePath() . '/logs/',
+        'routes' => "$basePath/routes/",
+        'views' => "$basePath/resources/views/",
+        'logs' => "$basePath/logs/",
+        'database' => "$basePath/database/",
+        'migrations' => "$basePath/database/Migrations/",
+        'seeders' => "$basePath/database/Seeders/",
     ],
 
     'timezone' => 'Europe/Kiev'

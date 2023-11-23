@@ -19,7 +19,7 @@ class Arr
     public static function get(string $key, array $array): mixed
     {
         if (trim($key) === '') {
-            return null;
+            return $array;
         }
 
         $keys = explode('.', $key);

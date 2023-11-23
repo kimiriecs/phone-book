@@ -34,7 +34,7 @@ abstract class BaseRepository implements RepositoryInterface
      */
     public function setConnection(string $connectionName): void
     {
-        App::instance()->db()->connect($connectionName);
+        App::db()->connect($connectionName);
     }
 
     /**
@@ -42,7 +42,7 @@ abstract class BaseRepository implements RepositoryInterface
      */
     public function connection(): PDO
     {
-        return App::instance()->db()->connect();
+        return App::db()->connect();
     }
 
     /**

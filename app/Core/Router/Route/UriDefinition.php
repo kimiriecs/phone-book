@@ -23,7 +23,7 @@ class UriDefinition
     /**
      * @var array $parametersDefinitions
      */
-    protected array $parametersDefinitions;
+    protected array $parametersDefinitions = [];
 
     /**
      * @param string $uriMask
@@ -81,14 +81,17 @@ class UriDefinition
         preg_match_all($pattern, $this->uriMask, $matches);
         $urlParametersMap = array_combine($matches[$parameterKey], $matches[$placeholderKey]);
 
-        foreach ($urlParametersMap as $name => $placeholder) {
-            $parameter = UriParameterDefinition::fromArray([
-                'name' => $name,
-                'placeholder' => $placeholder,
-            ]);
+        if (! empty($urlParametersMap)) {
+            foreach ($urlParametersMap as $name => $placeholder) {
+                $parameter = UriParameterDefinition::fromArray([
+                    'name' => $name,
+                    'placeholder' => $placeholder,
+                ]);
 
-            $this->parametersDefinitions[] = $parameter;
+                $this->parametersDefinitions[] = $parameter;
+            }
         }
+
     }
 
     /**

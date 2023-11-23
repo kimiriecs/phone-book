@@ -84,7 +84,7 @@ class Router
      */
     private function loadRoutes(): void
     {
-        require_once Path::routesPath('web');
+        require_once Path::routes('web');
     }
 
     /**

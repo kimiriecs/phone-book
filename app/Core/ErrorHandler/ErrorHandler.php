@@ -2,8 +2,8 @@
 
 namespace App\Core\ErrorHandler;
 
+use App\Core\App;
 use App\Core\Helpers\Config;
-use App\Core\Helpers\Env;
 use App\Core\Helpers\Path;
 use App\Core\Logger\CustomLineFormatter;
 use DateTimeZone;
@@ -36,7 +36,7 @@ class ErrorHandler
         if (!self::$logger) {
             self::$logger = new Logger('error_handler');
             $formatter = new CustomLineFormatter(Config::get('log.output'), Config::get('log.date_format'));
-            $stream = new StreamHandler(Path::logsPath(self::DEFAULT_LOG_FILE_NAME), Level::Debug);
+            $stream = new StreamHandler(Path::logs(self::DEFAULT_LOG_FILE_NAME), Level::Debug);
             $stream->setFormatter($formatter);
             self::$logger->pushHandler($stream);
 
@@ -66,7 +66,7 @@ class ErrorHandler
 
         self::getLogger()->error($logMessage);
 
-        if (Env::getBoolean('APP_DEBUG') === true) {
+        if (App::env()->getBoolean('APP_DEBUG') === true) {
             dd($logMessage);
         }
 
@@ -87,7 +87,7 @@ class ErrorHandler
 
         self::getLogger()->error($exception->getMessage(), [$exception->getTrace()]);
 
-        if (Env::getBoolean('APP_DEBUG') === true) {
+        if (App::env()->getBoolean('APP_DEBUG') === true) {
             dd($exception->getMessage(), $exception->getTrace());
         }
 

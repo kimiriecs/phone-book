@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Core\Database;
 
-use App\Core\App;
+use App\Core\ErrorHandler\ErrorHandler;
 use App\Core\Helpers\Config;
 use PDO;
 use PDOException;
@@ -59,21 +59,23 @@ class DB
         $connectionParameters = Config::get("database.connection." . $this->connectionName);
 
         try {
+            $driver = $connectionParameters['driver'];
             $host = $connectionParameters['host'];
             $port = $connectionParameters['port'];
             $dbname = $connectionParameters['database'];
             $username = $connectionParameters['user_name'];
             $password = $connectionParameters['password'];
-            $dsn = "pgsql:host=$host;port=$port;dbname=$dbname;";
+            $dsn = "$driver:host=$host;port=$port;dbname=$dbname;";
 
             $attributes = [
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                PDO::ATTR_AUTOCOMMIT => FALSE
             ];
 
             $this->connection = new PDO($dsn, $username, $password, $attributes);
         } catch (PDOException $e) {
-            App::instance()->log()->error($e->getMessage(), ['Trace' => $e->getTrace()]);
+            ErrorHandler::handleExceptions($e);
         }
     }
 
