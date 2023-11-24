@@ -12,6 +12,7 @@ use App\Core\Logger\Log;
 use App\Core\Middleware\MiddlewareHandler;
 use App\Core\Middleware\MiddlewareRegister;
 use App\Core\Request\Request;
+use App\Core\Request\Validation\ErrorBag;
 use App\Core\Response\Response;
 use App\Core\Router\Router;
 use App\Core\ServiceProvider\ServiceProvider;
@@ -126,6 +127,7 @@ class App extends Container
                 $this->singleton(MiddlewareRegister::class);
                 $this->singleton(MiddlewareHandler::class);
                 $this->singleton(Router::class);
+                $this->singleton(ErrorBag::class);
             }
 
             $this->singleton(DB::class);
