@@ -7,6 +7,7 @@ namespace App\Core\Request;
 use App\Core\App;
 use App\Core\Exceptions\InvalidUriException;
 use App\Core\Helpers\Arr;
+use App\Core\Router\Route\CurrentRoute;
 
 /**
  * Class Request
@@ -21,6 +22,7 @@ class Request
     public string $uri;
     public array $post;
     public array $get;
+    public ?CurrentRoute $route = null;
 
     /**
      * @throws InvalidUriException
@@ -30,7 +32,6 @@ class Request
         $this->uri = $this->validateUri();
         $this->post = $this->satinize($_POST);
         $this->get = $this->satinize($_GET);
-        App::session()->start();
         $this->setPrevUri();
     }
 
@@ -67,6 +68,15 @@ class Request
         }
 
         return $satinized;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isXRH(): bool
+    {
+        return !empty($_SERVER['HTTP_X_REQUESTED_WITH'])
+            && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
     }
 
     /**
@@ -131,6 +141,14 @@ class Request
     }
 
     /**
+     * @return CurrentRoute|null
+     */
+    public function route(): ?CurrentRoute
+    {
+        return $this->route;
+    }
+
+    /**
      * @return void
      */
     public function setPrevUri(): void
@@ -140,5 +158,14 @@ class Request
         }
 
         App::session()->set(self::SESSION_CURRENT_URI_KEY, $this->uri());
+    }
+
+    /**
+     * @param CurrentRoute $route
+     * @return void
+     */
+    public function setRoute(CurrentRoute $route): void
+    {
+        $this->route = $route;
     }
 }

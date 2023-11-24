@@ -18,6 +18,11 @@ class Session
     private const SESSION_LIFETIME_MINUTE_TO_SECONDS_MULTIPLIER = 60;
     public const SESSION_CSRF_TOKEN_KEY = 'csrf_token';
 
+    public function __construct()
+    {
+        $this->start();
+    }
+
     /**
      * @return void
      */

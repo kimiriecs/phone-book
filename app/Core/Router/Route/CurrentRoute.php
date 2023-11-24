@@ -85,6 +85,15 @@ class CurrentRoute
     }
 
     /**
+     * @param string $parameter
+     * @return mixed|null
+     */
+    public function getParameter(string $parameter): mixed
+    {
+        return $this->parameters[$parameter] ?? null;
+    }
+
+    /**
      * @return string|null
      */
     public function getName(): ?string

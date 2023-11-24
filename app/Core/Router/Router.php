@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Core\Router;
 
+use App\Core\App;
 use App\Core\ErrorHandler\ErrorHandler;
 use App\Core\Helpers\Path;
 use App\Core\Request\Request;
@@ -73,7 +74,15 @@ class Router
         try {
             $this->loadRoutes();
             $route = $this->getCurrentRoute($this->request->uri(), $this->request->method());
-            $this->dispatcher->handle($route);
+
+            if (! $route instanceof CurrentRoute) {
+                App::response()->redirect(App::router()->uri('notFound'));
+            } else {
+                App::request()->setRoute($route);
+                $this->dispatcher->handle($route);
+            }
+
+
         } catch (Throwable $e) {
             ErrorHandler::handleExceptions($e);
         }
