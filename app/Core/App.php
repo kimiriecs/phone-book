@@ -12,6 +12,7 @@ use App\Core\Logger\Log;
 use App\Core\Middleware\MiddlewareHandler;
 use App\Core\Middleware\MiddlewareRegister;
 use App\Core\Request\Request;
+use App\Core\Response\Response;
 use App\Core\Router\Router;
 use App\Core\ServiceProvider\ServiceProvider;
 use App\Core\Session\Session;
@@ -121,6 +122,7 @@ class App extends Container
             if (PHP_SAPI !== 'cli') {
                 $this->singleton(Session::class);
                 $this->singleton(Request::class);
+                $this->singleton(Response::class);
                 $this->singleton(MiddlewareRegister::class);
                 $this->singleton(MiddlewareHandler::class);
                 $this->singleton(Router::class);
@@ -200,6 +202,22 @@ class App extends Container
     public static function request(): Request
     {
         return self::instance()->make(Request::class);
+    }
+
+    /**
+     * @return Response
+     */
+    public static function response(): Response
+    {
+        return self::instance()->make(Response::class);
+    }
+
+    /**
+     * @return ErrorBag
+     */
+    public static function errorBag(): ErrorBag
+    {
+        return self::instance()->make(ErrorBag::class);
     }
 
     /**
