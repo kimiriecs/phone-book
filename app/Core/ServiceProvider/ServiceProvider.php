@@ -9,6 +9,8 @@ use App\Core\Commands\Command;
 use App\Core\Commands\CommandRegister;
 use App\Core\Database\BaseRepository;
 use App\Core\Interfaces\RepositoryInterface;
+use Modules\User\Interfaces\Repositories\UserRepositoryInterface;
+use Modules\User\Repositories\UserRepository;
 
 /**
  * Class ServiceProvider
@@ -36,6 +38,7 @@ class ServiceProvider
     public function register(): void
     {
         $this->app->bind(RepositoryInterface::class, BaseRepository::class);
+        $this->app->bind(UserRepositoryInterface::class, UserRepository::class);
     }
 
     /**

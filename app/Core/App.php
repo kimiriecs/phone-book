@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Core;
 
+use App\Core\Auth\Auth;
 use App\Core\Container\Container;
 use App\Core\Database\DB;
 use App\Core\Env\Env;
@@ -128,6 +129,7 @@ class App extends Container
                 $this->singleton(MiddlewareHandler::class);
                 $this->singleton(Router::class);
                 $this->singleton(ErrorBag::class);
+                $this->singleton(Auth::class);
             }
 
             $this->singleton(DB::class);
@@ -236,5 +238,13 @@ class App extends Container
     public static function db(): DB
     {
         return self::instance()->make(DB::class);
+    }
+
+    /**
+     * @return Auth
+     */
+    public static function auth(): Auth
+    {
+        return self::instance()->make(Auth::class);
     }
 }
