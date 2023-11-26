@@ -155,7 +155,7 @@ class Router
             }
 
             if (!$route instanceof Route) {
-                throw new Exception("Route with provided name does not exists");
+                throw new Exception("Route with provided name: '$name' does not exists");
             }
         } catch (Throwable $e) {
             ErrorHandler::handleExceptions($e);

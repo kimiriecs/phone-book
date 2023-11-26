@@ -19,11 +19,6 @@ use Throwable;
 class Route
 {
     /**
-     * @var string $uriMask
-     */
-    protected string $uriMask;
-
-    /**
      * @var string $method
      */
     protected string $method;
@@ -58,8 +53,7 @@ class Route
         string $method,
         array|Closure $handler
     ) {
-        $this->uriMask = $uriMask;
-        $this->uriDefinition = UriDefinition::fromMask($this->uriMask);
+        $this->uriDefinition = UriDefinition::fromMask($uriMask);
         $this->method = $method;
         $this->handler = RouteHandler::make($handler);
     }
@@ -142,7 +136,7 @@ class Route
      */
     public function getUriMask(): string
     {
-        return $this->uriMask;
+        return $this->getUriDefinition()->getUriMask();
     }
 
     /**

@@ -42,9 +42,9 @@ class Request
     private function validateUri(): string
     {
         $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?? '';
-        $isValidUri = preg_match('/^(\/([\w\-]|\d)+)*\/?$/i', trim($uri));
+        $isValidUri = preg_match('/^(\/([\w\-.]|\d)+)*\/?$/i', trim($uri));
         if (! $isValidUri) {
-            throw new InvalidUriException("Provided uri has invalid format");
+            throw new InvalidUriException("Provided uri: '$uri' has invalid format");
         }
 
         return $uri;

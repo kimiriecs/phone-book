@@ -55,11 +55,11 @@ class ErrorHandler
      * @param $errString
      * @param $errFile
      * @param $errLine
+     * @param bool|null $redirect
      * @return void
-     * @throws Exception
      */
     #[NoReturn]
-    public static function handleErrors($errNumber, $errString, $errFile, $errLine): void
+    public static function handleErrors($errNumber, $errString, $errFile, $errLine, ?bool $redirect = true): void
     {
         $logMessage = "Error: [$errNumber] $errString - $errFile:$errLine";
         error_log($logMessage);
@@ -70,17 +70,21 @@ class ErrorHandler
             dd($logMessage);
         }
 
-        header('HTTP/1.1 500 Internal Server Error');
-        include 'fallback-error-page/server-error.view.php';
+        if ($redirect) {
+            header('HTTP/1.1 500 Internal Server Error');
+            include 'fallback-error-page/server-error.view.php';
+        }
+
         exit();
     }
 
     /**
      * @param Throwable $exception
+     * @param bool|null $redirect
      * @return void
      */
     #[NoReturn]
-    public static function handleExceptions(Throwable $exception): void
+    public static function handleExceptions(Throwable $exception, ?bool $redirect = true): void
     {
         $logMessage = 'Uncaught Exception: ' . $exception->getMessage() . ' in ' . $exception->getFile() . ':' . $exception->getLine();
         error_log($logMessage);
@@ -91,8 +95,11 @@ class ErrorHandler
             dd($exception->getMessage(), $exception->getTrace());
         }
 
-        header('HTTP/1.1 503 Service Temporarily Unavailable');
-        include 'fallback-error-page/unavailable-page.view.php';
+        if ($redirect) {
+            header('HTTP/1.1 503 Service Temporarily Unavailable');
+            include 'fallback-error-page/unavailable-page.view.php';
+        }
+
         exit();
     }
 }

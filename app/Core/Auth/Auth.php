@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace App\Core\Auth;
 
 use App\Core\App;
-use App\Modules\User\Exceptions\UserNotFoundException;
+use App\Core\ErrorHandler\ErrorHandler;
+use Modules\User\Exceptions\UserNotFoundException;
 use Exception;
 use Modules\User\Entities\User;
 use Modules\User\Interfaces\Repositories\UserRepositoryInterface;
 use ReflectionException;
+use Throwable;
 
 /**
  * Class Auth
@@ -31,7 +33,6 @@ class Auth
 
     /**
      * @return User|null
-     * @throws UserNotFoundException
      */
     public function user(): ?User
     {
@@ -40,12 +41,16 @@ class Auth
             return null;
         }
 
-        $user = $this->repository->findById($id);
-        if (!$user instanceof User) {
-            throw new UserNotFoundException("User not found", 404);
-        }
+        try {
+            $user = $this->repository->findById($id);
+            if (!$user instanceof User) {
+                throw new UserNotFoundException("User not found", 404);
+            }
 
-        return $user;
+            return $user;
+        } catch (Throwable $e) {
+            ErrorHandler::handleExceptions($e);
+        }
     }
 
     /**
