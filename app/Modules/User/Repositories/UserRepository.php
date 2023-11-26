@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Modules\User\Repositories;
 
-use App\Core\DataBase\BaseRepository;
+use App\Core\Database\BaseRepository;
 use Modules\User\Entities\User;
 use Modules\User\Interfaces\Repositories\UserRepositoryInterface;
 
 /**
  * Class UserRepository
  *
- * @package App\Modules\User\Repositories
+ * @package Modules\User\Repositories
  */
 class UserRepository extends BaseRepository implements UserRepositoryInterface
 {
