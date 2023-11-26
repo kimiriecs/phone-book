@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace App\Core\Database\Migration;
 
-use App\Core\App;
-use App\Core\ErrorHandler\ErrorHandler;
-use Throwable;
+use App\Core\Database\Actions\MakeQueryInTransaction;
 
 /**
  * Class Migration
@@ -16,11 +14,19 @@ use Throwable;
 class Migration
 {
     /**
+     * @param MakeQueryInTransaction $query
+     */
+    public function __construct(
+        protected MakeQueryInTransaction $query
+    ) {
+    }
+
+    /**
      * @return void
      */
     public function run(): void
     {
-        $this->execute();
+        //
     }
 
     /**
@@ -28,34 +34,16 @@ class Migration
      */
     public function back(): void
     {
-        $this->execute();
+        //
     }
 
     /**
-     * @param string|null $query
-     * @return void
+     * @param string $query
+     * @param array|null $values
+     * @return bool
      */
-    protected function execute(?string $query = null): void
+    public function execute(string $query, ?array $values = []): bool
     {
-        if (is_null($query)) {
-            return;
-        }
-
-        $pdo = App::db()->connect();
-
-        try {
-            $pdo->beginTransaction();
-
-            $pdo->prepare($query)->execute();
-
-            if ($pdo->inTransaction()) {
-                $pdo->commit();
-            }
-        } catch (Throwable $e) {
-            if ($pdo->inTransaction()) {
-                $pdo->rollBack();
-            }
-            ErrorHandler::handleExceptions($e);
-        }
+        return $this->query->execute($query, $values);
     }
 }

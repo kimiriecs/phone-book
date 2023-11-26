@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Core\Commands;
 
 use App\Core\Commands\Common\ListCommands;
-use App\Core\Commands\DataBase\DropTables;
-use App\Core\Commands\DataBase\MigrateTables;
-use App\Core\Commands\DataBase\RollbackTables;
+use App\Core\Commands\Database\DropTables;
+use App\Core\Commands\Database\MigrateTables;
+use App\Core\Commands\Database\RollbackTables;
 
 /**
  * Class CommandRegister

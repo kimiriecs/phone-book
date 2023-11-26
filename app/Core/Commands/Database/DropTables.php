@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Core\Commands\DataBase;
+namespace App\Core\Commands\Database;
 
 use App\Core\App;
 use App\Core\Commands\Command;
@@ -11,11 +11,11 @@ use App\Core\Database\Migration\Migration;
 use App\Core\Database\Migration\MigrationRegister;
 
 /**
- * Class MigrateTables
+ * Class DropTables
  *
  * @package App\Core\Commands
  */
-class MigrateTables extends Command
+class DropTables extends Command
 {
     /**
      * @param array $args
@@ -23,22 +23,24 @@ class MigrateTables extends Command
      */
     public function run(array $args): void
     {
-        $toMigrate = MigrationRegister::toMigrate();
-        if (empty($toMigrate)) {
-            echo ListCommands::GREEN . "Nothing to migrate..." . ListCommands::RESET . "\n";
+        $toDrop = MigrationRegister::toRollback();
+        if (empty($toDrop)) {
+            echo ListCommands::GREEN . "Nothing to drop..." . ListCommands::RESET . "\n";
             exit();
         }
 
-        $migrated = [];
-        foreach ($toMigrate as $migrationClass) {
+        foreach ($toDrop as $migrationClass) {
             /** @var Migration $migration */
             $migration = App::instance()->make($migrationClass);
-            $migration->run();
-            $migrated[] = $migrationClass;
-            echo ListCommands::GREEN . "$migrationClass was migrated..." . ListCommands::RESET . "\n";
+
+            $migration->back();
+            echo ListCommands::GREEN . "$migrationClass was dropped..." . ListCommands::RESET . "\n";
         }
 
-        MigrationRegister::setMigrated($migrated);
+        if (!MigrationRegister::tableExists(MigrationRegister::TABLE)) {
+            echo ListCommands::GREEN . "The last migration was dropped..." . ListCommands::RESET . "\n";
+            exit();
+        }
     }
 
     /**
@@ -46,7 +48,7 @@ class MigrateTables extends Command
      */
     public function name(): string
     {
-        return 'db:migrate';
+        return 'db:drop';
     }
 
     /**
@@ -54,6 +56,6 @@ class MigrateTables extends Command
      */
     public function description(): string
     {
-        return 'run migrations';
+        return 'drop all tables';
     }
 }

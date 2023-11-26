@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace DataBase\Migrations;
+namespace Database\Migrations;
 
 use App\Core\Database\Migration\Migration;
 

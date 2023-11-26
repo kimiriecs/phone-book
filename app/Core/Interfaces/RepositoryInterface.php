@@ -34,6 +34,21 @@ interface RepositoryInterface
     public function connection(): PDO;
 
     /**
+     * @return void
+     */
+    public function transaction(): void;
+
+    /**
+     * @return void
+     */
+    public function commit(): void;
+
+    /**
+     * @return void
+     */
+    public function rollback(): void;
+
+    /**
      * @param array|null $sort
      * @param array|null $filter
      * @return array<Entity>
@@ -63,6 +78,12 @@ interface RepositoryInterface
      * @return Entity|null
      */
     public function insert(array $data): ?Entity;
+
+    /**
+     * @param array $data
+     * @return array|null
+     */
+    public function insertMany(array $data): ?array;
 
     /**
      * @param int $id

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Core\Commands\DataBase;
+namespace App\Core\Commands\Database;
 
 use App\Core\App;
 use App\Core\Commands\Command;
@@ -13,7 +13,7 @@ use App\Core\Database\Migration\MigrationRegister;
 /**
  * Class RollbackTables
  *
- * @package App\Core\Commands\DataBase
+ * @package App\Core\Commands\Database
  */
 class RollbackTables extends Command
 {

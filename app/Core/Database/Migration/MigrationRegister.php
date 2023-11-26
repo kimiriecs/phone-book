@@ -9,9 +9,9 @@ use App\Core\Database\Migration\Actions\GetMigrated;
 use App\Core\Database\Migration\Actions\IsTableExists;
 use App\Core\Database\Migration\Actions\SetMigrated;
 use App\Core\Database\Migration\Actions\UnsetMigrated;
-use DataBase\Migrations\CreateContactsTable;
-use DataBase\Migrations\CreateMigrationsTable;
-use DataBase\Migrations\CreateUsersTable;
+use Database\Migrations\CreateContactsTable;
+use Database\Migrations\CreateMigrationsTable;
+use Database\Migrations\CreateUsersTable;
 
 /**
  * Class MigrationRegister

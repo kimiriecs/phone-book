@@ -6,10 +6,12 @@ namespace App\Core\Database;
 
 use App\Core\App;
 use App\Core\Entity\Entity;
+use App\Core\ErrorHandler\ErrorHandler;
 use App\Core\Interfaces\RepositoryInterface;
 use PDO;
 use PDOStatement;
 use ReflectionException;
+use Throwable;
 
 /**
  * Class BaseRepository
@@ -18,6 +20,11 @@ use ReflectionException;
  */
 abstract class BaseRepository implements RepositoryInterface
 {
+    /**
+     * @var PDO|null $pdo
+     */
+    private ?PDO $pdo = null;
+
     /**
      * @return string
      */
@@ -42,8 +49,41 @@ abstract class BaseRepository implements RepositoryInterface
      */
     public function connection(): PDO
     {
-        return App::db()->connect();
+        if (! $this->pdo) {
+            $this->pdo = App::db()->connect();
+        }
+
+        return $this->pdo;
     }
+
+    /**
+     * @return void
+     */
+    public function transaction(): void
+    {
+        $this->connection()->beginTransaction();
+    }
+
+    /**
+     * @return void
+     */
+    public function commit(): void
+    {
+        if ($this->connection()->inTransaction()) {
+            $this->connection()->commit();
+        }
+    }
+
+    /**
+     * @return void
+     */
+    public function rollback(): void
+    {
+        if ($this->connection()->inTransaction()) {
+            $this->connection()->rollBack();
+        }
+    }
+
 
     /**
      * @param string $query
@@ -113,7 +153,7 @@ abstract class BaseRepository implements RepositoryInterface
         $statement = $this->getPreparedStatement($query);
         $statement->execute($params);
 
-        return (bool) $statement->fetchColumn();
+        return (bool)$statement->fetchColumn();
     }
 
     /**
@@ -174,18 +214,19 @@ abstract class BaseRepository implements RepositoryInterface
     {
         $table = $this->getEntityTable();
         $placeholders = implode(',', array_fill(0, count($ids), '?'));
-        $query = "SELECT * FROM $table WHERE id IN ($placeholders)";
+        $query = "SELECT * FROM $table WHERE id IN ($placeholders);";
+
         $statement = $this->getPreparedStatement($query);
-        $statement->execute($ids);
+        $success = $statement->execute($ids);
 
-        $result = $statement->fetchAll();
-
-        if ($result === false) {
+        if (!$success) {
             return null;
         }
 
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+
         $entities = [];
-        foreach($result as $row) {
+        foreach ($result as $row) {
             $entities[] = EntityReflector::getEntity($this->getEntityClass(), $row);
         }
 
@@ -225,8 +266,7 @@ abstract class BaseRepository implements RepositoryInterface
 
     /**
      * @param array $data
-     * @return array<Entity>|null
-     * @throws ReflectionException
+     * @return array|null
      */
     public function insertMany(array $data): ?array
     {
@@ -246,7 +286,7 @@ abstract class BaseRepository implements RepositoryInterface
 
             $placeholders = [];
             foreach ($row as $column => $value) {
-                $placeholder = ':' . $column . $index;
+                $placeholder = ":$column$index";
                 $placeholders[] = $placeholder;
                 $allValues[$placeholder] = $value;
             }
@@ -254,17 +294,26 @@ abstract class BaseRepository implements RepositoryInterface
         }
 
         $allPlaceholders = implode(',', $preparedPlaceholders);
-        $query = "INSERT INTO $table ($preparedColumns) VALUES $allPlaceholders RETURNING id";
-        $statement = $this->getPreparedStatement($query);
-        $success = $statement->execute($allValues);
+        $query = "INSERT INTO $table ($preparedColumns) VALUES $allPlaceholders RETURNING id;";
 
-        if (!$success) {
-            return null;
+        try {
+            $this->transaction();
+            $statement = $this->getPreparedStatement($query);
+            $success = $statement->execute($allValues);
+
+            if (!$success) {
+                return null;
+            }
+
+            $lastIds = $statement->fetchAll(PDO::FETCH_COLUMN, 0);
+            $this->commit();
+
+            return $this->whereIn($lastIds);
+        } catch (Throwable $e) {
+            $this->rollback();
+
+            ErrorHandler::handleExceptions($e);
         }
-
-        $lastIds = $statement->fetchAll(PDO::FETCH_COLUMN, 0);
-
-        return $this->whereIn($lastIds);
     }
 
     /**

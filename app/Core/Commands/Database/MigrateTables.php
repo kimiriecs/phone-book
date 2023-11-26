@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Core\Commands\DataBase;
+namespace App\Core\Commands\Database;
 
 use App\Core\App;
 use App\Core\Commands\Command;
@@ -11,11 +11,11 @@ use App\Core\Database\Migration\Migration;
 use App\Core\Database\Migration\MigrationRegister;
 
 /**
- * Class DropTables
+ * Class MigrateTables
  *
  * @package App\Core\Commands
  */
-class DropTables extends Command
+class MigrateTables extends Command
 {
     /**
      * @param array $args
@@ -23,24 +23,22 @@ class DropTables extends Command
      */
     public function run(array $args): void
     {
-        $toDrop = MigrationRegister::toRollback();
-        if (empty($toDrop)) {
-            echo ListCommands::GREEN . "Nothing to drop..." . ListCommands::RESET . "\n";
+        $toMigrate = MigrationRegister::toMigrate();
+        if (empty($toMigrate)) {
+            echo ListCommands::GREEN . "Nothing to migrate..." . ListCommands::RESET . "\n";
             exit();
         }
 
-        foreach ($toDrop as $migrationClass) {
+        $migrated = [];
+        foreach ($toMigrate as $migrationClass) {
             /** @var Migration $migration */
             $migration = App::instance()->make($migrationClass);
-
-            $migration->back();
-            echo ListCommands::GREEN . "$migrationClass was dropped..." . ListCommands::RESET . "\n";
+            $migration->run();
+            $migrated[] = $migrationClass;
+            echo ListCommands::GREEN . "$migrationClass was migrated..." . ListCommands::RESET . "\n";
         }
 
-        if (!MigrationRegister::tableExists(MigrationRegister::TABLE)) {
-            echo ListCommands::GREEN . "The last migration was dropped..." . ListCommands::RESET . "\n";
-            exit();
-        }
+        MigrationRegister::setMigrated($migrated);
     }
 
     /**
@@ -48,7 +46,7 @@ class DropTables extends Command
      */
     public function name(): string
     {
-        return 'db:drop';
+        return 'db:migrate';
     }
 
     /**
@@ -56,6 +54,6 @@ class DropTables extends Command
      */
     public function description(): string
     {
-        return 'drop all tables';
+        return 'run migrations';
     }
 }
