@@ -25,7 +25,8 @@ class EntityReflector
         // Preparing values for constructor
         // The order of parameters is following order of properties in the class
         $argumentsForConstructor = [];
-        foreach ($reflectionClass->getProperties(\ReflectionProperty::IS_PROTECTED) as $property) {
+        $constructor = $reflectionClass->getConstructor();
+        foreach ($constructor->getParameters() as $property) {
             $propertyName = Str::snake($property->getName());
             $argumentsForConstructor[] = $data[$propertyName] ?? null;
         }
