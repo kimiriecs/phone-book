@@ -36,7 +36,11 @@ use App\Core\App;
                             <li><a class="dropdown-item" href="<?php echo App::router()->uri('login.show') ?>">Login</a></li>
                             <li><a class="dropdown-item" href="<?php echo App::router()->uri('register.show') ?>">Register</a></li>
                         <?php } else { ?>
-                            <li><a class="dropdown-item" href="<?php echo App::router()->uri('logout') ?>">Logout</a></li>
+                            <li>
+                                <form action="<?php echo App::router()->uri('logout') ?>" method="post">
+                                    <button class="dropdown-item" type="submit">Logout</button>
+                                </form>
+                            </li>
                         <?php } ?>
                     </ul>
                 </li>
