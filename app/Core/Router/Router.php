@@ -81,8 +81,6 @@ class Router
                 App::request()->setRoute($route);
                 $this->dispatcher->handle($route);
             }
-
-
         } catch (Throwable $e) {
             ErrorHandler::handleExceptions($e);
         }
@@ -148,13 +146,13 @@ class Router
                         return $route->getName() === $name;
                     });
 
-                if (!empty($routes)) {
+                if (! empty($routes)) {
                     $route = array_shift($routes);
                     break;
                 }
             }
 
-            if (!$route instanceof Route) {
+            if (! $route instanceof Route) {
                 throw new Exception("Route with provided name: '$name' does not exists");
             }
         } catch (Throwable $e) {

@@ -141,6 +141,23 @@ abstract class BaseRepository implements RepositoryInterface
 
     /**
      * @param array $params
+     * @return array|null
+     * @throws ReflectionException
+     */
+    public function findBy(array $params): ?array
+    {
+        $params = array_map(function ($item) {
+            if (is_bool($item)) {
+                return $item ? 1 : 0;
+            }
+            return $item;
+        }, $params);
+
+        return $this->findAll($params);
+    }
+
+    /**
+     * @param array $params
      * @return bool
      */
     public function exists(array $params): bool
@@ -186,7 +203,7 @@ abstract class BaseRepository implements RepositoryInterface
     {
         $params = array_map(function ($item) {
             if (is_bool($item)) {
-                return $item ? 'true' : 'false';
+                return $item ? 1 : 0;
             }
             return $item;
         }, $params);
@@ -242,7 +259,7 @@ abstract class BaseRepository implements RepositoryInterface
     {
         $data = array_map(function ($item) {
             if (is_bool($item)) {
-                return $item ? 'true' : 'false';
+                return $item ? 1 : 0;
             }
             return $item;
         }, $data);
@@ -279,7 +296,7 @@ abstract class BaseRepository implements RepositoryInterface
         foreach ($data as $index => $row) {
             $row = array_map(function ($item) {
                 if (is_bool($item)) {
-                    return $item ? 'true' : 'false';
+                    return $item ? 1 : 0;
                 }
                 return $item;
             }, $row);
@@ -326,7 +343,7 @@ abstract class BaseRepository implements RepositoryInterface
     {
         $data = array_map(function ($item) {
             if (is_bool($item)) {
-                return $item ? 'true' : 'false';
+                return $item ? 1 : 0;
             }
             return $item;
         }, $data);

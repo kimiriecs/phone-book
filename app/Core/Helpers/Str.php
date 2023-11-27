@@ -11,19 +11,19 @@ class Str
 {
     /**
      * @param string $string
-     * @param string|null $delimiter
      * @return string
      */
-    public static function camel(string $string, ?string $delimiter = '_'): string
+    public static function camel(string $string): string
     {
-        $words = explode($delimiter, strtolower($string));
+        $str = str_replace('-', '_', $string);
+        $words = explode('_', lcfirst($str));
 
-        $result = '';
+        $result = array_shift($words);
         foreach ($words as $word) {
-            $result .= ucfirst(trim($word));
+            $result .= ucfirst($word);
         }
 
-        return lcfirst($result);
+        return $result;
     }
 
     /**
@@ -32,6 +32,8 @@ class Str
      */
     public static function snake($string): string
     {
-        return strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $string));
+        $str = preg_replace('/(?<!^)[A-Z]/', '_$0', $string);
+
+        return str_replace('-', '_', strtolower($str));
     }
 }

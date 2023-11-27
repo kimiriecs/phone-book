@@ -57,6 +57,12 @@ interface RepositoryInterface
 
     /**
      * @param array $params
+     * @return array|null
+     */
+    public function findBy(array $params): ?array;
+
+    /**
+     * @param array $params
      * @return bool
      */
     public function exists(array $params): bool;
@@ -72,6 +78,12 @@ interface RepositoryInterface
      * @return Entity|null
      */
     public function findOneBy(array $params): ?Entity;
+
+    /**
+     * @param array $ids
+     * @return array|null
+     */
+    public function whereIn(array $ids): ?array;
 
     /**
      * @param array $data

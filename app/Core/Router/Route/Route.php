@@ -6,6 +6,7 @@ namespace App\Core\Router\Route;
 
 use App\Core\App;
 use App\Core\ErrorHandler\ErrorHandler;
+use App\Core\Helpers\Str;
 use App\Core\Request\HttpMethodEnum;
 use Closure;
 use Exception;
@@ -211,13 +212,7 @@ class Route
     {
         $resultData = [];
         foreach ($data as $key => $value) {
-            $key = strtolower($key);
-            $key = str_replace('-', '_', $key);
-            $keySegments = explode('_', $key);
-            $key = array_shift($keySegments);
-            foreach ($keySegments as $keySegment) {
-                $key .= ucfirst($keySegment);
-            }
+            $key = Str::camel($key);
 
             $resultData[$key] = $value;
         }
