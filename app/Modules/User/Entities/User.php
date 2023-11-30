@@ -95,11 +95,29 @@ class User extends Entity
     /**
      * @return array
      */
+    public static function fields(): array
+    {
+        return [
+            'id',
+            'first_name',
+            'last_name',
+            'email',
+            'password',
+            'created_at',
+        ];
+    }
+
+    /**
+     * @return array
+     */
     public function toArray(): array
     {
         return [
+            'id' => $this->getId(),
             'first_name' => $this->getFirstName(),
             'last_name' => $this->getLastName(),
+            'email' => $this->getEmail(),
+            'password' => $this->getPassword(),
             'created_at' => $this->getCreatedAt(),
         ];
     }

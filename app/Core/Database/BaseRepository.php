@@ -236,7 +236,7 @@ abstract class BaseRepository implements RepositoryInterface
         $statement = $this->getPreparedStatement($query);
         $success = $statement->execute($ids);
 
-        if (!$success) {
+        if (! $success) {
             return null;
         }
 
@@ -253,7 +253,6 @@ abstract class BaseRepository implements RepositoryInterface
     /**
      * @param array $data
      * @return Entity|null
-     * @throws ReflectionException
      */
     public function insert(array $data): ?Entity
     {
@@ -269,16 +268,25 @@ abstract class BaseRepository implements RepositoryInterface
         $preparedColumns = implode(',', array_keys($data));
         $columnsPlaceholders = $this->getColumnsPlaceholders($columns);
         $query = "INSERT INTO $table (" . $preparedColumns . ") VALUES (" . $columnsPlaceholders . ") RETURNING id";
-        $statement = $this->getPreparedStatement($query);
-        $success = $statement->execute($data);
 
-        if (!$success) {
-            return null;
+        try {
+            $this->transaction();
+            $statement = $this->getPreparedStatement($query);
+            $success = $statement->execute($data);
+            $this->commit();
+
+            if (! $success) {
+                return null;
+            }
+
+            $lastInsert = $statement->fetch();
+
+            return $this->findById((int)$lastInsert['id']);
+        } catch (Throwable $e) {
+            $this->rollback();
+
+            ErrorHandler::handleExceptions($e);
         }
-
-        $lastInsert = $statement->fetch();
-
-        return $this->findById((int)$lastInsert['id']);
     }
 
     /**
@@ -318,7 +326,7 @@ abstract class BaseRepository implements RepositoryInterface
             $statement = $this->getPreparedStatement($query);
             $success = $statement->execute($allValues);
 
-            if (!$success) {
+            if (! $success) {
                 return null;
             }
 
@@ -337,7 +345,6 @@ abstract class BaseRepository implements RepositoryInterface
      * @param int $id
      * @param array $data
      * @return Entity|null
-     * @throws ReflectionException
      */
     public function update(int $id, array $data): ?Entity
     {
@@ -348,27 +355,46 @@ abstract class BaseRepository implements RepositoryInterface
             return $item;
         }, $data);
 
+        $data['id'] = $id;
         $table = $this->getEntityTable();
         $columns = $this->getPreparedColumns($data);
         $query = "UPDATE $table SET $columns WHERE id = :id";
-        $statement = $this->getPreparedStatement($query);
-        $data['id'] = $id;
-        $statement->execute($data);
 
-        return $this->findById($id);
+        try {
+            $this->transaction();
+            $statement = $this->getPreparedStatement($query);
+            $statement->execute($data);
+            $this->commit();
+
+            return $this->findById($id);
+        } catch (Throwable $e) {
+            $this->rollback();
+
+            ErrorHandler::handleExceptions($e);
+        }
     }
 
     /**
-     * @param Entity $entity
+     * @param int $id
      * @return bool
      */
-    public function delete(Entity $entity): bool
+    public function delete(int $id): bool
     {
         $table = $this->getEntityTable();
-        $query = "DELETE FROM $table WHERE id = :id";
-        $statement = $this->getPreparedStatement($query);
+        $query = "DELETE FROM $table WHERE id = :id;";
 
-        return $statement->execute(['id' => $entity->getId()]);
+        try {
+            $this->transaction();
+            $statement = $this->getPreparedStatement($query);
+            $success = $statement->execute(['id' => $id]);
+            $this->commit();
+
+            return $success;
+        } catch (Throwable $e) {
+            $this->rollback();
+
+            ErrorHandler::handleExceptions($e);
+        }
     }
 
     /**
@@ -378,7 +404,7 @@ abstract class BaseRepository implements RepositoryInterface
      */
     private function addParametersToQuery(string $query, array $params): string
     {
-        if (!empty($params)) {
+        if (! empty($params)) {
             $conditions = [];
             foreach ($params as $key => $value) {
                 $conditions[] = "$key = :$key";

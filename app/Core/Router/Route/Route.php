@@ -257,11 +257,12 @@ class Route
                     $this->middleware[] = $item;
                 }
             }
+        } else {
+            if (!in_array($middleware, $this->middleware)) {
+                $this->middleware[] = $middleware;
+            }
         }
 
-        if (!in_array($middleware, $this->middleware)) {
-            $this->middleware[] = $middleware;
-        }
 
         return $this;
     }

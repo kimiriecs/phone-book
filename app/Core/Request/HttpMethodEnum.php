@@ -14,5 +14,5 @@ enum HttpMethodEnum : string
     case PUT = 'PUT';
     case PATCH = 'PATCH';
     case DELETE = 'DELETE';
-    case SUB_METHOD_FIELD_NAME = 'sub_method';
+    case SUB_METHOD_FIELD_NAME = 'actual_method';
 }

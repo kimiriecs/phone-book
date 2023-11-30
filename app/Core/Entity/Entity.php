@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Core\Entity;
 
-use ReflectionClass;
-
 /**
  * Class Entity
  *
@@ -29,15 +27,7 @@ abstract class Entity
     /**
      * @return array
      */
-    public static function fields(): array
-    {
-        $reflector = new ReflectionClass(static::class);
-        $constructor = $reflector->getConstructor();
-
-        return array_map(function ($property) {
-            return $property->getName();
-        }, $constructor->getParameters());
-    }
+    abstract static public function fields(): array;
 
     /**
      * @return array

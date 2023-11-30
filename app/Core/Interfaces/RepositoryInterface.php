@@ -105,8 +105,8 @@ interface RepositoryInterface
     public function update(int $id, array $data): ?Entity;
 
     /**
-     * @param Entity $entity
+     * @param int $id
      * @return bool
      */
-    public function delete(Entity $entity): bool;
+    public function delete(int $id): bool;
 }

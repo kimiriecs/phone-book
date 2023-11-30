@@ -155,10 +155,11 @@ class Router
             if (! $route instanceof Route) {
                 throw new Exception("Route with provided name: '$name' does not exists");
             }
+
+            return $route->generateUri($args);
         } catch (Throwable $e) {
             ErrorHandler::handleExceptions($e);
         }
 
-        return $route->generateUri($args);
     }
 }

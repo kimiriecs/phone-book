@@ -15,15 +15,13 @@ class Str
      */
     public static function camel(string $string): string
     {
-        $str = str_replace('-', '_', $string);
-        $words = explode('_', lcfirst($str));
+        $i = array("-","_");
+        $str = preg_replace('/([a-z])([A-Z])/', "\\1 \\2", $string);
+        $str = preg_replace('/[^a-zA-Z0-9\-_ ]+/', '', $str);
+        $str = str_replace($i, ' ', $str);
+        $str = str_replace(' ', '', ucwords(strtolower($str)));
 
-        $result = array_shift($words);
-        foreach ($words as $word) {
-            $result .= ucfirst($word);
-        }
-
-        return $result;
+        return strtolower(substr($str,0,1)).substr($str,1);
     }
 
     /**
