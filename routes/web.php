@@ -7,6 +7,8 @@ use App\Core\Router\Route\Route;
 use App\Modules\User\Http\Controllers\Web\DashboardController;
 use App\Modules\User\Http\Controllers\Web\WelcomeController;
 
+require 'error.php';
+require 'auth.php';
 
 Route::get('', [WelcomeController::class, 'index'])->name('welcome');
 
@@ -15,6 +17,3 @@ Route::get('topics', [WelcomeController::class, 'topics'])->name('topics');
 Route::get('users/{userId}/dashboard', [DashboardController::class, 'index'])
     ->name('dashboard')
     ->middleware(Authenticated::class);
-
-require 'error.php';
-require 'auth.php';

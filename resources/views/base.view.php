@@ -18,7 +18,7 @@ use App\Core\Helpers\Path;
 <body class="vh-100" style="font-family: 'Nunito',sans-serif">
 <div class="container-fluid">
     <div class="row">
-        <?php include Path::views('components/nav'); ?>
+        <?php include Path::views('components/common/nav'); ?>
     </div>
     <div class="row h-100">
         <?php include Path::views($content) ?>

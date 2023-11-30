@@ -8,11 +8,10 @@ use App\Core\App;
         <div class="col-2 border-end px-5">
             <ul class="row d-flex flex-column list-group">
                 <li class="col list-group-item border-0">
-                    <a href="<?php echo App::router()->uri('welcome') ?>"
+                    <a href="<?php echo App::router()->uri('topics') ?>"
                        style="text-decoration: none"
                     >
-                        <span class="text-danger">Phone</span>
-                        <span>Book</span>
+                        All topics
                     </a>
                 </li>
             </ul>

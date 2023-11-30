@@ -15,7 +15,7 @@ use App\Core\App;
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNavDropdown">
-            <ul class="navbar-nav w-100 mb-2 mb-lg-0 echo justify-content-between">
+            <ul class="navbar-nav w-100 ps-5 mb-2 mb-lg-0 echo justify-content-between">
                 <?php if (App::auth()->check()) {?>
                 <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href="<?php echo App::router()->uri('dashboard', ['userId' => App::auth()->id()]) ?>">Dashboard</a>

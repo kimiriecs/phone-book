@@ -1,6 +1,7 @@
 <?php declare(strict_types=1);
 
 use App\Core\App;
+use App\Core\Helpers\Path;
 use App\Core\Session\Session;
 use Modules\User\DTO\Web\Pages\AuthFormPageDto;
 
@@ -50,15 +51,18 @@ use Modules\User\DTO\Web\Pages\AuthFormPageDto;
                     <label for="password" class="form-label row text-start mt-auto mb-0 col-5">
                         Password
                     </label>
-                    <input
-                            name="password"
-                            type="password"
-                            class="form-control row rounded-0 border-0 border-bottom"
-                            id="password"
-                            value="<?php if ($pageDto->getOldPassword()) {
-                                echo $pageDto->getOldPassword();
-                            } ?>"
-                    >
+                    <div class="row border-bottom w-100">
+                        <input
+                                name="password"
+                                type="password"
+                                class="form-control col rounded-0 border-0"
+                                id="password"
+                                value="<?php if ($pageDto->getOldPassword()) {
+                                    echo $pageDto->getOldPassword();
+                                } ?>"
+                        >
+                        <?php include Path::views('components/auth/buttons/small/auth.show-password.small.button');?>
+                    </div>
                     <?php if ($pageDto->getPasswordErrors()) { ?>
                         <div id="passwordError" class="form-text row small text-danger">
                             <?php echo $pageDto->getPasswordErrors()[0] ?>
@@ -73,15 +77,18 @@ use Modules\User\DTO\Web\Pages\AuthFormPageDto;
                         <label for="password_confirmation" class="form-label row text-start mt-auto mb-0 col-5">
                             Confirm Password
                         </label>
-                        <input
-                                name="password_confirmation"
-                                type="password"
-                                class="form-control row rounded-0 border-0 border-bottom"
-                                id="password_confirmation"
-                                value="<?php if ($pageDto->getOldPasswordConfirmation()) {
-                                    echo $pageDto->getOldPasswordConfirmation();
-                                } ?>"
-                        >
+                        <div class="row border-bottom w-100">
+                            <input
+                                    name="password_confirmation"
+                                    type="password"
+                                    class="form-control col rounded-0 border-0"
+                                    id="password_confirmation"
+                                    value="<?php if ($pageDto->getOldPasswordConfirmation()) {
+                                        echo $pageDto->getOldPasswordConfirmation();
+                                    } ?>"
+                            >
+                            <?php include Path::views('components/auth/buttons/small/auth.show-password-confirmation.small.button');?>
+                        </div>
                         <?php if ($pageDto->getPasswordConfirmationErrors()) { ?>
                             <div id="passwordConfirmationError" class="form-text row small text-danger">
                                 <?php echo $pageDto->getPasswordConfirmationErrors()[0] ?>
@@ -106,3 +113,5 @@ use Modules\User\DTO\Web\Pages\AuthFormPageDto;
         </form>
     </div>
 </div>
+
+<?php include Path::views('components/auth/helpers/auth.show-password-js.script'); ?>

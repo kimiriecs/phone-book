@@ -7,8 +7,6 @@ namespace Modules\User\Http\Requests\Web\Auth;
 use App\Core\Request\FormRequest;
 use App\Core\Request\Validation\Rules\Handlers\IsEmail;
 use App\Core\Request\Validation\Rules\Handlers\IsString;
-use App\Core\Request\Validation\Rules\Handlers\Max;
-use App\Core\Request\Validation\Rules\Handlers\Min;
 use App\Core\Request\Validation\Rules\Handlers\Required;
 
 /**
@@ -18,9 +16,6 @@ use App\Core\Request\Validation\Rules\Handlers\Required;
  */
 class LoginRequest extends FormRequest
 {
-    const MIN_PASSWORD_LENGTH = 8;
-    const MAX_PASSWORD_LENGTH = 255;
-
     /**
      * @return array
      */
@@ -34,9 +29,7 @@ class LoginRequest extends FormRequest
             ],
             'password' => [
                 Required::class,
-                IsString::class,
-                [Min::class => [self::MIN_PASSWORD_LENGTH]],
-                [Max::class => [self::MAX_PASSWORD_LENGTH]]
+                IsString::class
             ]
         ];
     }

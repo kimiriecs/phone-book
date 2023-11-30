@@ -8,6 +8,7 @@ use App\Core\Request\Validation\Rules\Handlers\Confirmed;
 use App\Core\Request\Validation\Rules\Handlers\IsString;
 use App\Core\Request\Validation\Rules\Handlers\Max;
 use App\Core\Request\Validation\Rules\Handlers\Min;
+use App\Core\Request\Validation\Rules\Handlers\Password;
 use App\Core\Request\Validation\Rules\Handlers\Required;
 
 /**
@@ -25,13 +26,14 @@ class RegisterRequest extends LoginRequest
      */
     public function rules(): array
     {
-
         $rules = parent::rules();
+
         $rules['password'] = [
             Required::class,
             IsString::class,
             [Min::class => [self::MIN_PASSWORD_LENGTH]],
             [Max::class => [self::MAX_PASSWORD_LENGTH]],
+            [Password::class => [true, true, true]],
             [Confirmed::class => ['password_confirmation']]
         ];
 
@@ -39,7 +41,8 @@ class RegisterRequest extends LoginRequest
             Required::class,
             IsString::class,
             [Min::class => [self::MIN_PASSWORD_LENGTH]],
-            [Max::class => [self::MAX_PASSWORD_LENGTH]]
+            [Max::class => [self::MAX_PASSWORD_LENGTH]],
+            [Password::class => [true, true, true]],
         ];
 
         return $rules;

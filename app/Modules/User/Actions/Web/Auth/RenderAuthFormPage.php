@@ -44,7 +44,7 @@ class RenderAuthFormPage
             passwordConfirmationErrors: $errorBag['password_confirmation'] ?? null,
         );
 
-        $content = 'auth';
+        $content = 'components/auth/auth';
         View::render('base', compact('content', 'pageDto'));
     }
 }
