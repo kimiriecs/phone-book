@@ -8,7 +8,7 @@ use App\Core\Router\Route\Route;
 use Modules\User\Http\Controllers\Web\Auth\LoginController;
 use Modules\User\Http\Controllers\Web\Auth\RegisterController;
 
-Route::get('register/show', [RegisterController::class, 'showRegister'])
+Route::get('register', [RegisterController::class, 'showRegister'])
     ->name('register.show')
     ->middleware(UnAuthenticated::class);
 
@@ -16,7 +16,7 @@ Route::post('register', [RegisterController::class, 'register'])
     ->name('register')
     ->middleware(UnAuthenticated::class);
 
-Route::get('login/show', [LoginController::class, 'showLogin'])
+Route::get('login', [LoginController::class, 'showLogin'])
     ->name('login.show')
     ->middleware(UnAuthenticated::class);
 

@@ -9,6 +9,7 @@ namespace App\Core\Request;
  */
 enum HttpMethodEnum : string
 {
+    case ANY = 'ANY';
     case GET = 'GET';
     case POST = 'POST';
     case PUT = 'PUT';

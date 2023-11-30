@@ -71,6 +71,20 @@ class UriDefinition
     }
 
     /**
+     * @param string $parameter
+     * @return UriParameterDefinition|null
+     */
+    public function getParametersDefinition(string $parameter): ?UriParameterDefinition
+    {
+        $definitions = array_filter($this->parametersDefinitions,
+            function (UriParameterDefinition $definition) use ($parameter) {
+                return $definition->getName() === $parameter;
+            });
+
+        return array_shift($definitions);
+    }
+
+    /**
      * @return void
      */
     private function setUriParametersDefinition(): void
@@ -91,13 +105,12 @@ class UriDefinition
                 $this->parametersDefinitions[] = $parameter;
             }
         }
-
     }
 
     /**
      * @return void
      */
-    private function setFullUriRegex(): void
+    public function setFullUriRegex(): void
     {
         $patterns = array_map(function (UriParameterDefinition $parameter) {
             return $parameter->getPlaceholderPattern();

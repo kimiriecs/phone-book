@@ -105,7 +105,7 @@ use Modules\User\DTO\Web\Pages\AuthFormPageDto;
             <div class="d-flex justify-content-between">
                 <button type="submit" class="btn btn-outline-success">Submit</button>
                 <a class="btn btn-outline-primary"
-                   href="<?php echo $pageDto->isRegisterPage() ? '/login/show' : '/register/show' ?>"
+                   href="<?php echo $pageDto->isRegisterPage() ? App::router()->uri('login') : App::router()->uri('register') ?>"
                 >
                     <?php echo $pageDto->isRegisterPage() ? 'Login' : 'Register' ?>
                 </a>

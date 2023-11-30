@@ -139,4 +139,28 @@ class UriParameterDefinition
     {
         return $this->placeholderPattern;
     }
+
+    /**
+     * @param string $type
+     * @return void
+     */
+    public function setType(string $type): void
+    {
+        $this->type = $type;
+    }
+
+    /**
+     * @param string $name
+     * @param string $pattern
+     * @return void
+     */
+    public function setPattern(string $name, string $pattern): void
+    {
+        $pattern = trim($pattern);
+        if ($pattern === '') {
+            return;
+        }
+
+        $this->pattern = "(?<$name>$pattern)";
+    }
 }

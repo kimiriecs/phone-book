@@ -73,6 +73,7 @@ class Router
     {
         try {
             $this->loadRoutes();
+
             $route = $this->getCurrentRoute($this->request->uri(), $this->request->method());
 
             if (! $route instanceof CurrentRoute) {
@@ -92,6 +93,7 @@ class Router
     private function loadRoutes(): void
     {
         require_once Path::routes('web');
+        require_once Path::routes('api');
     }
 
     /**
@@ -102,9 +104,14 @@ class Router
     private function getCurrentRoute(string $uri, string $method): ?CurrentRoute
     {
         $currentRoute = null;
+        $routesByMethod = $this->routes[$method] ?? null;
+
+        if (! $routesByMethod) {
+            return null;
+        }
 
         /** @var Route $route */
-        foreach ($this->routes[$method] as $route) {
+        foreach ($routesByMethod as $route) {
             $uriDefinition = $route->getUriDefinition();
 
             preg_match(

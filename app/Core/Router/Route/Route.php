@@ -64,6 +64,16 @@ class Route
      * @param array|Closure $handler
      * @return Route
      */
+    public static function any(string $uriMask, array|Closure $handler): Route
+    {
+        return self::make($uriMask, $handler, HttpMethodEnum::ANY->value);
+    }
+
+    /**
+     * @param string $uriMask
+     * @param array|Closure $handler
+     * @return Route
+     */
     public static function get(string $uriMask, array|Closure $handler): Route
     {
         return self::make($uriMask, $handler, HttpMethodEnum::GET->value);
@@ -186,7 +196,7 @@ class Route
      */
     public function generateUri(?array $args = []): string
     {
-        if (!empty($args)) {
+        if (! empty($args)) {
             $args = $this->prepareKeys($args);
             $parametersDefinitions = $this->getUriDefinition()->getParametersDefinitions();
 
@@ -232,7 +242,7 @@ class Route
                     return $route->getName() === $name;
                 });
 
-                if (!empty($routes)) {
+                if (! empty($routes)) {
                     throw new Exception("Route with provided name already exists");
                 }
             }
@@ -253,16 +263,55 @@ class Route
     {
         if (is_array($middleware)) {
             foreach ($middleware as $item) {
-                if (!in_array($item, $this->middleware)) {
+                if (! in_array($item, $this->middleware)) {
                     $this->middleware[] = $item;
                 }
             }
         } else {
-            if (!in_array($middleware, $this->middleware)) {
+            if (! in_array($middleware, $this->middleware)) {
                 $this->middleware[] = $middleware;
             }
         }
 
+
+        return $this;
+    }
+
+    /**
+     * @param array|string $parameters
+     * @param string|null $singlePattern
+     * @return Route
+     */
+    public function where(array|string $parameters, ?string $singlePattern = null): Route
+    {
+        $definition = $this->getUriDefinition();
+        if (is_array($parameters)) {
+            foreach ($parameters as $name => $pattern) {
+                $parametersDefinition = $definition->getParametersDefinition($name);
+                if (! $parametersDefinition) {
+                    continue;
+                }
+                $parametersDefinition->setPattern($name, $pattern);
+                $parametersDefinition->setType('string');
+            }
+
+            $definition->setFullUriRegex();
+        } else {
+            if (
+                trim($parameters) !== ''
+                && $singlePattern
+                && trim($singlePattern) !== ''
+            ) {
+                $definition = $this->getUriDefinition();
+                $parametersDefinition = $definition->getParametersDefinition($parameters);
+                if ($parametersDefinition) {
+                    $parametersDefinition->setPattern($parameters, $singlePattern);
+                    $parametersDefinition->setType('string');
+                }
+
+                $definition->setFullUriRegex();
+            }
+        }
 
         return $this;
     }
