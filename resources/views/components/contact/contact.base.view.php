@@ -1,7 +1,12 @@
 <?php declare(strict_types=1);
+
 use App\Core\App;
-use App\Core\Auth\Auth;
+use App\Core\Helpers\Path;
+use App\Core\Interfaces\DTO\BaseEntityPageDtoInterface;
+
+/** @var BaseEntityPageDtoInterface $pageDto */
 ?>
+
 <div class="col justify-content-center h-100 mt-5">
     <div class="row d-flex h-100">
         <div class="col-2 border-end px-5">
@@ -16,10 +21,8 @@ use App\Core\Auth\Auth;
             </ul>
         </div>
         <div class="col px-5">
-            <div class="row d-flex justify-content-center">
-                <div class="col">
-                    <h1 class="text-center">Dashboard</h1>
-                </div>
+            <div class="row justify-content-center h-100">
+                <?php include Path::views($pageDto->getPage())?>
             </div>
         </div>
     </div>

@@ -17,11 +17,12 @@ class CreateContactsTable extends Migration
     {
         $query = "CREATE TABLE contacts("
             . "id         BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY, "
-            . "user_id    BIGINT, "
+            . "user_id    BIGINT NOT NULL, "
             . "first_name VARCHAR(255) NOT NULL, "
             . "last_name  VARCHAR(255) NOT NULL, "
             . "phone      VARCHAR(255) NOT NULL, "
             . "email      VARCHAR(255) NOT NULL, "
+            . "is_favorite      BOOLEAN NOT NULL, "
             . "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL, "
             . "FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE);";
 

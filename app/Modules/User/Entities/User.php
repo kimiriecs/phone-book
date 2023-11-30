@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Modules\User\Entities;
 
+use App\Core\App;
 use App\Core\Entity\Entity;
 use DateTime;
+use Modules\Contact\Interfaces\Repositories\ContactRepositoryInterface;
 
 /**
  * Class User
@@ -15,6 +17,11 @@ use DateTime;
 class User extends Entity
 {
     const TABLE_NAME = 'users';
+
+    /**
+     * @var ContactRepositoryInterface|null $contactRepository
+     */
+    protected ?ContactRepositoryInterface $contactRepository = null;
 
     /**
      * @param int $id
@@ -90,6 +97,23 @@ class User extends Entity
     public function setLastName(?string $lastName): void
     {
         $this->lastName = $lastName;
+    }
+
+    public function contacts(): array
+    {
+        return $this->getContactRepository()->findBy(['user_id' => $this->getId()]);
+    }
+
+    /**
+     * @return ContactRepositoryInterface
+     */
+    private function getContactRepository(): ContactRepositoryInterface
+    {
+        if (! $this->contactRepository) {
+            $this->contactRepository = App::instance()->make(ContactRepositoryInterface::class);
+        }
+
+        return $this->contactRepository;
     }
 
     /**

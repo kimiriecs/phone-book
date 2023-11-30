@@ -47,6 +47,7 @@ class ContactsTableSeeder extends Seeder
                 'last_name' => "Contact #$contactIndex last name",
                 'phone' => '+380' . random_int(63, 99) . random_int(100, 999) . random_int(1000, 9999),
                 'email' => "contact$contactIndex@example.com",
+                'is_favorite' => rand(1, 5) > 3,
                 'created_at' => (new DateTime)->format('Y-m-d H:i:s'),
             ];
         }

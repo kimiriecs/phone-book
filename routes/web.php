@@ -9,6 +9,7 @@ use App\Modules\User\Http\Controllers\Web\WelcomeController;
 
 require 'error.php';
 require 'auth.php';
+require 'contact.php';
 
 Route::get('', [WelcomeController::class, 'index'])->name('welcome');
 
