@@ -92,8 +92,13 @@ class ContactController extends WebController
     public function store(StoreContactRequest $request, StoreContact $action): void
     {
         $dto = ContactDto::fromRequest($request);
-        $action->execute($dto);
-        App::response()->redirect(App::router()->uri('contact.index', ['userId' => App::auth()->id()]));
+        $contact = $action->execute($dto);
+        $data = [
+            'data' => $contact->toArray(),
+            'redirect_url' => App::router()->uri('contact.index', ['userId' => App::auth()->id()])
+        ];
+
+        App::response()->json($data);
     }
 
     /**

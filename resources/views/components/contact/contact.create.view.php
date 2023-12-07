@@ -30,9 +30,11 @@ $skipFields = [
         <form action="<?php echo App::router()->uri('contact.store', ['userId' => App::auth()->id()]) ?>"
               method="POST"
               class="row"
+              id="create_contact_form"
         >
             <input type="hidden"
                    name="<?php echo Session::SESSION_CSRF_TOKEN_KEY ?>"
+                   id="<?php echo Session::SESSION_CSRF_TOKEN_KEY ?>"
                    value="<?php echo App::session()->getCsrf() ?>">
 
             <input type="checkbox"
@@ -87,3 +89,4 @@ $skipFields = [
         </form>
     </div>
 <?php include Path::views('components/contact/helpers/contact.set-is-favorite-js.script'); ?>
+<?php include Path::views('components/contact/helpers/contact.create-js.script'); ?>
