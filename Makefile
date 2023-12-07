@@ -40,6 +40,7 @@ npm-install:
 
 install-mix:
 	$(DOCKER_COMPOSE_APP) npm install laravel-mix --save-dev
+
 mix-dev:
 	$(DOCKER_COMPOSE_APP) npx mix watch
 
