@@ -18,6 +18,14 @@ git clone git@github.com:kimiriecs/phone-book.git
 ```
 
 <span style="color:chocolate; font-style: italic">
+copy .env.example to .env
+</span>
+
+```shell
+cp .env.example .env
+```
+
+<span style="color:chocolate; font-style: italic">
 move into the root directory of the project
 </span>
 
